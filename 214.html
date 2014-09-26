@@ -1,0 +1,288 @@
+<html>
+<head>
+<title>我的积分</title>
+
+<script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/hczd-client.js"></script>
+<link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="css/elan.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/elan.css">
+<script type="text/javascript">
+    //标签页脚本
+    function nTabs(thisObj, Num) {
+        if (thisObj.className == "active")
+            return;
+        var tabList = document.getElementById("myTab").getElementsByTagName(
+                "li");
+        for (i = 0; i < tabList.length; i++) {//点击之后，其他tab变成灰色，内容隐藏，只有点击的tab和内容有属性
+            if (i == Num) {
+                thisObj.className = "active";
+                document.getElementById("myTab_Content" + i).style.display = "block";
+            } else {
+                tabList[i].className = "normal";
+                document.getElementById("myTab_Content" + i).style.display = "none";
+            }
+        }
+    }
+
+    $(function () {
+        /**
+         *数据显示
+         **/
+        $('#dt_vehicle_group')
+                .elanGrid(
+                {
+                    url: 'integral/integral/ajax_list_info.htm?cid=',
+                    pageable: true,
+                    columns: [
+                        {
+                            field: 'opr_time',
+                            title: '时间',
+                            width: 150,
+                            align: 'center'
+                        },
+                        {
+                            title: '积分来源',
+                            width: 100,
+                            align: 'center',
+                            formatter: function (value, rowIndex, rowData) {
+                                return (rowData.source == "" || rowData.source == null) ? rowData.type_name
+                                        : rowData.source;
+                            }
+                        },
+                        {
+                            title: '状态',
+                            width: 40,
+                            align: 'center',
+                            formatter: function (value, rowIndex, rowData) {
+                                return rowData.status == 2 ? "<span style='color:green;'>完成</span>"
+                                        : (rowData.status == -2 ? "<span style='color:red;'>失败</span>"
+                                        : "<span style='color:blue;'>冻结</span>");
+                            }
+                        },
+                        {
+                            title: '积分流向',
+                            width: 80,
+                            align: 'center',
+                            formatter: function (value, rowIndex, rowData) {
+                                return rowData.io == 1 ? "<span style='color:green;'>流入</span>"
+                                        : "<span style='color:red;'>流出</span>";
+                            }
+                        },
+                        {
+                            title: '积分',
+                            formatter: function (value, rowIndex, rowData) {
+                                return Math
+                                        .round(rowData.num * 100) / 100;
+                            }
+                        },
+                        {
+                            field: 'current_balance',
+                            title: '积分余额',
+                            width: 80,
+                            align: 'right'
+                        }
+                    ],
+                    pagesize: 10,
+                    pageable: true,
+                    extradata: {}
+                });
+    });
+
+    //积分兑换等图片显示
+    $(document).ready(function () {
+        $('.boxgrid.caption').hover(function () {
+            $(".cover", this).stop().animate({
+                top: '0px'
+            }, {
+                queue: false,
+                duration: 160
+            });
+        }, function () {
+            $(".cover", this).stop().animate({
+                top: '20px'
+            }, {
+                queue: false,
+                duration: 160
+            });
+        });
+    });
+
+    //搜索加载数据
+    // 		function search_data(){
+    //设置分页时查询条件
+    // 			$('#dg').datagrid({
+    // 				queryParams: {
+    // 					startDate:$("#startDate").datebox("getValue"),
+    // 					endDate:$("#endDate").datebox("getValue")
+    // 				}
+    // 			});
+    // 		}
+</script>
+<style type="text/css">
+    /**账户余额等图片显示*/
+    .account_container {
+        height: 100%;
+        width: 78.6%;
+        margin: 5px 0 0 0;
+        border: 1px solid #339933;
+        display: inline-block;
+        float: left;
+    }
+
+    .boxgrid {
+        margin: 2% 0 0 4%;
+        width: 108px;
+        height: 108px;
+        float: left;
+        background: white;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .boxgrid h3 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        text-align: center;
+        letter-spacing: -1px;
+    }
+
+    .boxgrid img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: 0;
+    }
+
+    .boxgrid p {
+        text-align: center;
+        font-weight: bold;
+        font: 1em;
+    }
+
+    .boxgrid a {
+        font-size: 1em;
+        color: #af0000;
+    }
+
+    .boxgrid a:HOVER {
+        font-size: 1em;
+        color: #1a00b9;
+    }
+
+    .boxgrid:HOVER {
+        color: white;
+    }
+
+    .boxcaption {
+        float: left;
+        position: absolute;
+        background: #eeeeee;
+        height: 90px;
+        width: 100%;
+        opacity: .8; /* For IE 5-7 */
+        filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+        /* For IE 8 */
+        -MS-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    }
+
+    .boxcaption:HOVER {
+        background: #339933;
+    }
+
+    .captionfull .boxcaption {
+        top: 0px;
+        left: 0px;
+    }
+
+    .caption .boxcaption {
+        top: 20px;
+        left: 0px;
+    }
+
+    /**end 账户余额等图片显示*/
+</style>
+</head>
+
+<body>
+<div class="bar4">
+    <sub> <b style="font-size: 13px;">当前可用积分：0 </b> <span style="font-size: 13px;"> &nbsp;&nbsp; 当前不可用积分：0 &nbsp;&nbsp;
+				本月产生积分：0 &nbsp;&nbsp; 本月已使用积分：0 </span> </sub>
+</div>
+<div class="nTab">
+    <div class="TabTitle">
+        <ul id="myTab">
+            <li class="active" onclick="nTabs(this,0);">我的积分</li>
+            <li class="normal" onclick="nTabs(this,1);">积分兑换</li>
+        </ul>
+    </div>
+    <div class="TabContent">
+        <!-- 我的积分 -->
+        <div id="myTab_Content0">
+            <div class="bar4">
+                <table id="dt_vehicle_group" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0"
+                       border="0">
+                    <thead>
+                    <tr>
+                        <td>时间</td>
+                        <td>积分来源</td>
+                        <td>状态</td>
+                        <td>积分流向</td>
+                        <td>积分</td>
+                        <td class="td_right">积分余额</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>&nbsp;2014-06-13 16:32:49</td>
+                        <td>&nbsp;创建积分账户</td>
+                        <td>&nbsp;<span style="color:green;">完成</span></td>
+                        <td>&nbsp;<span style="color:green;">流入</span></td>
+                        <td>&nbsp;0</td>
+                        <td class="td_right">&nbsp;0</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td class="pageset" colspan="6" style="border: 0;">
+                            <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp;
+                                首页&nbsp; </a>&nbsp;&nbsp;<a href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input
+                                    value="1" size="2" class="elanCurrentPage">页/共<span
+                                    class="elanTotalPage">1</span>页<a href="javascript:void(0);" class="elanNextPage">
+                                &nbsp; 下一页&nbsp; </a>&nbsp;&nbsp;<a href="javascript:void(0);" class="elanLastPage">
+                                &nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span class="elanTotalSize">1</span>条数据，显示<span
+                                    class="elanFromStart">1</span>-<span class="elanFromEnd">1</span>条
+                            </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <!-- 积分兑换 -->
+        <div id="myTab_Content1" class="none">
+            <div class="boxgrid caption"><img src="images/reception/keyongyue.png">
+                <a href="http://www.taou365.com" target="_blank">
+                    <div class="cover boxcaption">
+                        <h3>淘油网</h3>
+                    </div>
+                </a>
+            </div>
+            <div class="boxgrid caption"><img src="images/reception/zhanghuyue.png">
+
+                <div class="cover boxcaption">
+                    <h3>敬请期待<br></h3>
+
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

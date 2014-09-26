@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <link rel="stylesheet" href="../style.css">
+
+</head>
+<body>
+
+<div id="main">
+
+        <ul id="nav">
+            <li><a href="#">常用功能</a>
+                <ul class="sub-menu">
+                    <li><a href="123.html" target="content">业务概览</a>
+                    </li>
+                    <li><a href="123.html" target="content">油卡业务</a>
+                    </li>
+                    <li><a href="123.html" target="content">燃油分期</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+        <div style="clear:none;"></div>
+
+</div>
+<div id="main2">
+    <iframe src="../404.html" marginheight="0" marginwidth="0" frameborder="0" scrolling="no" width=100% height=100%
+            id="content" name="content" onLoad="iFrameHeight()"></iframe>
+</div>
+
+<script type="text/javascript" src="./js/vendor/jquery.min.js"></script>
+<script>
+    $(document)
+            .ready(
+            function() {
+                var nav_head = $('#nav > li > a'), nav_body = $('#nav li > .sub-menu');
+                //默认载入第一项菜单
+                nav_head.first().addClass('active').next()
+                        .slideDown('Normal');
+                //其他点击效果
+                nav_head.on('click', function(event) {
+                    //使菜单头无效
+                    event.preventDefault();
+                    //显示和隐藏菜单
+                    if ($(this).attr('class') != 'active') {
+                        nav_body.slideUp('normal');
+                        $(this).next().stop(true, true).slideDown(
+                                'normal');
+                        nav_head.removeClass('active');
+                        $(this).addClass('active');
+                    }
+                });
+
+            });
+
+    function iFrameHeight() {
+
+        var ifm = document.getElementById("content");
+
+        var subWeb = document.frames ? document.frames["content"].document :
+
+                ifm.contentDocument;
+
+        if (ifm != null && subWeb != null) {
+
+            ifm.height = subWeb.body.scrollHeight;
+
+        }
+
+    }
+</script>
+</body>
+</html>

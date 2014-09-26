@@ -1,0 +1,339 @@
+<html>
+<head>
+    <title>月结账单</title>
+
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hczd-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src=" js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <script type="text/javascript">
+        $(function () {
+            /**
+             *数据显示
+             **/
+
+            $('#dt_month_account_group_0').elanGrid({
+                url: 'card/gas_card_month_chart/ajax_list.htm?card_no=1000113500002888881&t=' + new Date().getTime(),
+                pageable: true,
+                columns: [
+                    {field: 'month', title: '统计月份', width: 160, align: 'left'},
+                    {field: 'pre_balance', title: '上个月卡余额', width: 70, align: 'left'},
+                    {field: 'allocation_amount', title: '本月充值(元)', width: 70, align: 'left'},
+                    {field: 'expense_amount', title: '本月加油(元)', width: 70, align: 'left'},
+                    {field: 'oil_count', title: '本月加油(升)', width: 70, align: 'left'},
+                    {field: 'this_balance', title: '本月卡余额', width: 70, align: 'left'},
+                    {title: '详情', formatter: function (value, rowIndex, rowData) {
+                        if ("[customer/customer/basic_account.htm_首页, customer/customer/basic_account.htm_业务概览, account/pay/editnew.htm_充值, account/mat_money_log/list.htm_立即还款, bill_monad/bill_monad/list.htm_付款, customer/customer/promotion_detail.htm_业务推广, customer/customer/notice_detail.htm_系统公告, card/gas_card/list.htm_油卡业务, account/installment/list.htm_燃油分期, customer/customer/company_info.htm_会员账户, customer/customer/company_info.htm_账户中心, customer/customer/company_info.htm_会员信息, customer/customer/company_info.htm_基本信息, bill/aptitude/add.htm_发票资质申请, authority/customer_user/update_pwd.htm_修改密码, bill/aptitude/list.htm_发票资质, bill/aptitude/validate.htm_发票资质删除, account/capital/query.htm_资金账户, account/recharge_record/list.htm_充值记录, account/pay/editnew.htm_立即充值, account/payment/paymentList.htm_收支明细, account/payment/money_out.htm_只看支出, account/payment/money_in.htm_只看收入, integral/integral/integralInfo.htm_我的积分, report/month_chart/list.htm_月结账单, report/month_chart/detail_v2.htm_查看, account/mat_money_log/list.htm_财务操作, account/mat_money_log/list.htm_垫资还款, account/mat_money_log/repayment_save.htm_一键归还, account/mat_money_log/repayment_save.htm_还款, account/installment/list.htm_燃油分期, account/installment_item/updateAutoAllocation.htm_启用, account/installment_item/edit.htm_设置, account/installment/edit.htm_设置, account/installment/save.htm_保存, account/installment_item/updateAutoAllocation.htm_禁用, bill_monad/bill_monad/list.htm_支付账单, bill_monad/bill_monad/pay_bill.htm_支付, bill_monad/bill_monad/detail.htm_详细, bill_monad/bill_monad/eidtnew.htm_编辑, bill/inventory/inventoryList.htm_开票申请, bill/inventory/add.htm_开票申请, bill/timing/list.htm_发票定时, bill/timing/update_status.htm_启用, bill/timing/update_status.htm_禁用, card/gas_card/list.htm_随车支付卡, card/gas_card/list.htm_加油卡, card/gas_card/list.htm_油卡业务, card/gas_card/app_assign.htm_分配申请, card/gas_card/add.htm_油卡申请, card/gas_card/cardInfo.htm_加油明细, card/gas_card/cardInfo_excel.htm_导出表格, card/gas_card/allocation_info.htm_分配明细, card/gas_card/excel_allocation_record.htm_导出Excel, card/gas_card_month_chart/list.htm_月结账单, card/gas_card/cardInfo.htm_详情, card/gas_card_change_app_record/list.htm_油卡变更, card/gas_card_change_app_record/editnew.htm_新增变更, card/gas_card_change_app_record/disable.htm_作废, access/access_card/list_handle.htm_通行卡, access/access_card/list_handle.htm_通行卡业务, access/access_card_account/save.htm_充值, access/access_card/app_assign.htm_分配申请, access/access_card_account/detail_list.htm_账户明细, insurance/insurance/query.htm_金融保险, insurance/insurance/query.htm_保险业务, insurance/insurance/query.htm_保单查询, insurance/insurance/detail_order.htm_详细, insurance/insurance/add.htm_新增保单, insurance/insurance/installment_query.htm_分期保单, insurance/insurance_installment_item/list.htm_分期明细, insurance/insurance/detail_order2.htm_详细, integral/integral/integralInfo.htm_车辆管理, vehicle/vehicle/list.htm_车辆资源, vehicle/vehicle/list.htm_车辆信息, vehicle/vehicle/editnew.htm_添加车辆, vehicle/vehicle/detail.htm_查看, vehicle/affiliat/edit.htm_借用, vehicle/vehicle/edit.htm_修改, vehicle/status/list.htm_车辆监控, Note/SetNotePark.aspx_异常提醒设置, vehicle/status/oilWear.htm_累积油耗, FortuneManageSet.aspx_车辆运程服务, vehicle/status/cardRecord.htm_加油明细, vehicle/vehicle_change/list.htm_变更管理, vehicle/vehicle_change/editnew.htm_登记变更, vehicle/vehicle_change/detail.htm_详细, vehicle/vehicle_change/disable.htm_作废, vehicle/vehicle_maintain/list.htm_维修管理, vehicle/vehicle_maintain/edit.htm_修改, vehicle/vehicle_maintain/disable.htm_作废, vehicle/vehicle_maintain/editnew.htm_登记维修, vehicle/vehicle_maintain/detail.htm_详细, vehicle/status/vehicle_status_report.htm_车辆报表, authority/index/to_tms.htm_运输管理系统, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_人员管理, authority/customer_user/detail.htm_详细, authority/customer_user/edit.htm_修改, authority/customer_user/disable.htm_禁用, authority/customer_user/disable.htm_启用, authority/customer_user/add.htm_添加人员, authority/customer_group/list.htm_人员角色, authority/customer_sys_power_group/edit.htm_权限管理, authority/customer_group/add.htm_添加角色, authority/customer_group/delete.htm_删除, authority/customer_group/edit.htm_修改, authority/customer_user_papers/list.htm_证件管理, authority/customer_user_papers/edit.htm_修改]".indexOf("card/gas_card/cardInfo.htm_详情") != -1) {
+                            return "<a href='card/gas_card/cardInfo.htm?search_no=1000113500002888881&startDate=" + rowData.month + "-01 00:00:00"
+                                    + "&endDate=" + rowData.month + "-" + getLastDay(rowData.month.substring(0, 4), rowData.month.substring(5, 7)) + " 23:59:59' >详情</a>";
+                        } else {
+                            return "";
+                        }
+                    }}
+                ],
+                pagesize: 3,
+                pageable: true,
+                extradata: {}
+            });
+
+            $('#dt_month_account_group_1').elanGrid({
+                url: 'card/gas_card_month_chart/ajax_list.htm?card_no=1000113500002888880&t=' + new Date().getTime(),
+                pageable: true,
+                columns: [
+                    {field: 'month', title: '统计月份', width: 160, align: 'left'},
+                    {field: 'pre_balance', title: '上个月卡余额', width: 70, align: 'left'},
+                    {field: 'allocation_amount', title: '本月充值(元)', width: 70, align: 'left'},
+                    {field: 'expense_amount', title: '本月加油(元)', width: 70, align: 'left'},
+                    {field: 'oil_count', title: '本月加油(升)', width: 70, align: 'left'},
+                    {field: 'this_balance', title: '本月卡余额', width: 70, align: 'left'},
+                    {title: '详情', formatter: function (value, rowIndex, rowData) {
+                        if ("[customer/customer/basic_account.htm_首页, customer/customer/basic_account.htm_业务概览, account/pay/editnew.htm_充值, account/mat_money_log/list.htm_立即还款, bill_monad/bill_monad/list.htm_付款, customer/customer/promotion_detail.htm_业务推广, customer/customer/notice_detail.htm_系统公告, card/gas_card/list.htm_油卡业务, account/installment/list.htm_燃油分期, customer/customer/company_info.htm_会员账户, customer/customer/company_info.htm_账户中心, customer/customer/company_info.htm_会员信息, customer/customer/company_info.htm_基本信息, bill/aptitude/add.htm_发票资质申请, authority/customer_user/update_pwd.htm_修改密码, bill/aptitude/list.htm_发票资质, bill/aptitude/validate.htm_发票资质删除, account/capital/query.htm_资金账户, account/recharge_record/list.htm_充值记录, account/pay/editnew.htm_立即充值, account/payment/paymentList.htm_收支明细, account/payment/money_out.htm_只看支出, account/payment/money_in.htm_只看收入, integral/integral/integralInfo.htm_我的积分, report/month_chart/list.htm_月结账单, report/month_chart/detail_v2.htm_查看, account/mat_money_log/list.htm_财务操作, account/mat_money_log/list.htm_垫资还款, account/mat_money_log/repayment_save.htm_一键归还, account/mat_money_log/repayment_save.htm_还款, account/installment/list.htm_燃油分期, account/installment_item/updateAutoAllocation.htm_启用, account/installment_item/edit.htm_设置, account/installment/edit.htm_设置, account/installment/save.htm_保存, account/installment_item/updateAutoAllocation.htm_禁用, bill_monad/bill_monad/list.htm_支付账单, bill_monad/bill_monad/pay_bill.htm_支付, bill_monad/bill_monad/detail.htm_详细, bill_monad/bill_monad/eidtnew.htm_编辑, bill/inventory/inventoryList.htm_开票申请, bill/inventory/add.htm_开票申请, bill/timing/list.htm_发票定时, bill/timing/update_status.htm_启用, bill/timing/update_status.htm_禁用, card/gas_card/list.htm_随车支付卡, card/gas_card/list.htm_加油卡, card/gas_card/list.htm_油卡业务, card/gas_card/app_assign.htm_分配申请, card/gas_card/add.htm_油卡申请, card/gas_card/cardInfo.htm_加油明细, card/gas_card/cardInfo_excel.htm_导出表格, card/gas_card/allocation_info.htm_分配明细, card/gas_card/excel_allocation_record.htm_导出Excel, card/gas_card_month_chart/list.htm_月结账单, card/gas_card/cardInfo.htm_详情, card/gas_card_change_app_record/list.htm_油卡变更, card/gas_card_change_app_record/editnew.htm_新增变更, card/gas_card_change_app_record/disable.htm_作废, access/access_card/list_handle.htm_通行卡, access/access_card/list_handle.htm_通行卡业务, access/access_card_account/save.htm_充值, access/access_card/app_assign.htm_分配申请, access/access_card_account/detail_list.htm_账户明细, insurance/insurance/query.htm_金融保险, insurance/insurance/query.htm_保险业务, insurance/insurance/query.htm_保单查询, insurance/insurance/detail_order.htm_详细, insurance/insurance/add.htm_新增保单, insurance/insurance/installment_query.htm_分期保单, insurance/insurance_installment_item/list.htm_分期明细, insurance/insurance/detail_order2.htm_详细, integral/integral/integralInfo.htm_车辆管理, vehicle/vehicle/list.htm_车辆资源, vehicle/vehicle/list.htm_车辆信息, vehicle/vehicle/editnew.htm_添加车辆, vehicle/vehicle/detail.htm_查看, vehicle/affiliat/edit.htm_借用, vehicle/vehicle/edit.htm_修改, vehicle/status/list.htm_车辆监控, Note/SetNotePark.aspx_异常提醒设置, vehicle/status/oilWear.htm_累积油耗, FortuneManageSet.aspx_车辆运程服务, vehicle/status/cardRecord.htm_加油明细, vehicle/vehicle_change/list.htm_变更管理, vehicle/vehicle_change/editnew.htm_登记变更, vehicle/vehicle_change/detail.htm_详细, vehicle/vehicle_change/disable.htm_作废, vehicle/vehicle_maintain/list.htm_维修管理, vehicle/vehicle_maintain/edit.htm_修改, vehicle/vehicle_maintain/disable.htm_作废, vehicle/vehicle_maintain/editnew.htm_登记维修, vehicle/vehicle_maintain/detail.htm_详细, vehicle/status/vehicle_status_report.htm_车辆报表, authority/index/to_tms.htm_运输管理系统, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_人员管理, authority/customer_user/detail.htm_详细, authority/customer_user/edit.htm_修改, authority/customer_user/disable.htm_禁用, authority/customer_user/disable.htm_启用, authority/customer_user/add.htm_添加人员, authority/customer_group/list.htm_人员角色, authority/customer_sys_power_group/edit.htm_权限管理, authority/customer_group/add.htm_添加角色, authority/customer_group/delete.htm_删除, authority/customer_group/edit.htm_修改, authority/customer_user_papers/list.htm_证件管理, authority/customer_user_papers/edit.htm_修改]".indexOf("card/gas_card/cardInfo.htm_详情") != -1) {
+                            return "<a href='card/gas_card/cardInfo.htm?search_no=1000113500002888880&startDate=" + rowData.month + "-01 00:00:00"
+                                    + "&endDate=" + rowData.month + "-" + getLastDay(rowData.month.substring(0, 4), rowData.month.substring(5, 7)) + " 23:59:59' >详情</a>";
+                        } else {
+                            return "";
+                        }
+                    }}
+                ],
+                pagesize: 3,
+                pageable: true,
+                extradata: {}
+            });
+
+            $('#dt_month_account_group_2').elanGrid({
+                url: 'card/gas_card_month_chart/ajax_list.htm?card_no=1000113500002888671&t=' + new Date().getTime(),
+                pageable: true,
+                columns: [
+                    {field: 'month', title: '统计月份', width: 160, align: 'left'},
+                    {field: 'pre_balance', title: '上个月卡余额', width: 70, align: 'left'},
+                    {field: 'allocation_amount', title: '本月充值(元)', width: 70, align: 'left'},
+                    {field: 'expense_amount', title: '本月加油(元)', width: 70, align: 'left'},
+                    {field: 'oil_count', title: '本月加油(升)', width: 70, align: 'left'},
+                    {field: 'this_balance', title: '本月卡余额', width: 70, align: 'left'},
+                    {title: '详情', formatter: function (value, rowIndex, rowData) {
+                        if ("[customer/customer/basic_account.htm_首页, customer/customer/basic_account.htm_业务概览, account/pay/editnew.htm_充值, account/mat_money_log/list.htm_立即还款, bill_monad/bill_monad/list.htm_付款, customer/customer/promotion_detail.htm_业务推广, customer/customer/notice_detail.htm_系统公告, card/gas_card/list.htm_油卡业务, account/installment/list.htm_燃油分期, customer/customer/company_info.htm_会员账户, customer/customer/company_info.htm_账户中心, customer/customer/company_info.htm_会员信息, customer/customer/company_info.htm_基本信息, bill/aptitude/add.htm_发票资质申请, authority/customer_user/update_pwd.htm_修改密码, bill/aptitude/list.htm_发票资质, bill/aptitude/validate.htm_发票资质删除, account/capital/query.htm_资金账户, account/recharge_record/list.htm_充值记录, account/pay/editnew.htm_立即充值, account/payment/paymentList.htm_收支明细, account/payment/money_out.htm_只看支出, account/payment/money_in.htm_只看收入, integral/integral/integralInfo.htm_我的积分, report/month_chart/list.htm_月结账单, report/month_chart/detail_v2.htm_查看, account/mat_money_log/list.htm_财务操作, account/mat_money_log/list.htm_垫资还款, account/mat_money_log/repayment_save.htm_一键归还, account/mat_money_log/repayment_save.htm_还款, account/installment/list.htm_燃油分期, account/installment_item/updateAutoAllocation.htm_启用, account/installment_item/edit.htm_设置, account/installment/edit.htm_设置, account/installment/save.htm_保存, account/installment_item/updateAutoAllocation.htm_禁用, bill_monad/bill_monad/list.htm_支付账单, bill_monad/bill_monad/pay_bill.htm_支付, bill_monad/bill_monad/detail.htm_详细, bill_monad/bill_monad/eidtnew.htm_编辑, bill/inventory/inventoryList.htm_开票申请, bill/inventory/add.htm_开票申请, bill/timing/list.htm_发票定时, bill/timing/update_status.htm_启用, bill/timing/update_status.htm_禁用, card/gas_card/list.htm_随车支付卡, card/gas_card/list.htm_加油卡, card/gas_card/list.htm_油卡业务, card/gas_card/app_assign.htm_分配申请, card/gas_card/add.htm_油卡申请, card/gas_card/cardInfo.htm_加油明细, card/gas_card/cardInfo_excel.htm_导出表格, card/gas_card/allocation_info.htm_分配明细, card/gas_card/excel_allocation_record.htm_导出Excel, card/gas_card_month_chart/list.htm_月结账单, card/gas_card/cardInfo.htm_详情, card/gas_card_change_app_record/list.htm_油卡变更, card/gas_card_change_app_record/editnew.htm_新增变更, card/gas_card_change_app_record/disable.htm_作废, access/access_card/list_handle.htm_通行卡, access/access_card/list_handle.htm_通行卡业务, access/access_card_account/save.htm_充值, access/access_card/app_assign.htm_分配申请, access/access_card_account/detail_list.htm_账户明细, insurance/insurance/query.htm_金融保险, insurance/insurance/query.htm_保险业务, insurance/insurance/query.htm_保单查询, insurance/insurance/detail_order.htm_详细, insurance/insurance/add.htm_新增保单, insurance/insurance/installment_query.htm_分期保单, insurance/insurance_installment_item/list.htm_分期明细, insurance/insurance/detail_order2.htm_详细, integral/integral/integralInfo.htm_车辆管理, vehicle/vehicle/list.htm_车辆资源, vehicle/vehicle/list.htm_车辆信息, vehicle/vehicle/editnew.htm_添加车辆, vehicle/vehicle/detail.htm_查看, vehicle/affiliat/edit.htm_借用, vehicle/vehicle/edit.htm_修改, vehicle/status/list.htm_车辆监控, Note/SetNotePark.aspx_异常提醒设置, vehicle/status/oilWear.htm_累积油耗, FortuneManageSet.aspx_车辆运程服务, vehicle/status/cardRecord.htm_加油明细, vehicle/vehicle_change/list.htm_变更管理, vehicle/vehicle_change/editnew.htm_登记变更, vehicle/vehicle_change/detail.htm_详细, vehicle/vehicle_change/disable.htm_作废, vehicle/vehicle_maintain/list.htm_维修管理, vehicle/vehicle_maintain/edit.htm_修改, vehicle/vehicle_maintain/disable.htm_作废, vehicle/vehicle_maintain/editnew.htm_登记维修, vehicle/vehicle_maintain/detail.htm_详细, vehicle/status/vehicle_status_report.htm_车辆报表, authority/index/to_tms.htm_运输管理系统, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_人员管理, authority/customer_user/detail.htm_详细, authority/customer_user/edit.htm_修改, authority/customer_user/disable.htm_禁用, authority/customer_user/disable.htm_启用, authority/customer_user/add.htm_添加人员, authority/customer_group/list.htm_人员角色, authority/customer_sys_power_group/edit.htm_权限管理, authority/customer_group/add.htm_添加角色, authority/customer_group/delete.htm_删除, authority/customer_group/edit.htm_修改, authority/customer_user_papers/list.htm_证件管理, authority/customer_user_papers/edit.htm_修改]".indexOf("card/gas_card/cardInfo.htm_详情") != -1) {
+                            return "<a href='card/gas_card/cardInfo.htm?search_no=1000113500002888671&startDate=" + rowData.month + "-01 00:00:00"
+                                    + "&endDate=" + rowData.month + "-" + getLastDay(rowData.month.substring(0, 4), rowData.month.substring(5, 7)) + " 23:59:59' >详情</a>";
+                        } else {
+                            return "";
+                        }
+                    }}
+                ],
+                pagesize: 3,
+                pageable: true,
+                extradata: {}
+            });
+
+        });
+
+        //获得某月的最后一天
+        function getLastDay(year, month) {
+            var new_year = year;    //取当前的年份
+            var new_month = month++;//取下一个月的第一天，方便计算（最后一天不固定）
+            if (month > 12) {
+                new_month -= 12;        //月份减
+                new_year++;            //年份增
+            }
+            var new_date = new Date(new_year, new_month, 1);                //取当年当月中的第一天
+            return (new Date(new_date.getTime() - 1000 * 60 * 60 * 24)).getDate();//获取当月最后一天日期
+        }
+    </script>
+</head>
+
+<body>
+<form id="monthFrom" action="card/gas_card_month_chart/list.htm" method="post">
+    <div>
+        <div class="bar3">
+            <div class="beij">
+                车牌号/卡号：
+                <input type="text" id="search_no" name="search_no" value="" class="txt4">
+                <!-- <input type="button" id="search" class="search" onclick="javascript:$('#monthFrom').submit();" style="cursor: hand;" /> -->
+                <a href="javascript:void(0);" onclick="javascript:$('#monthFrom').submit();"
+                   class="easyui-linkbutton l-btn" group="" id=""><span class="l-btn-left"><span
+                        class="l-btn-text">查询</span></span></a>
+            </div>
+        </div>
+        (注：<span style="color: red;">如果下列没有您需要的信息,您可以在上面输入对应车牌号或加油卡进行搜索</span>)
+        <br>
+
+        <b style="font-size: 13px;">
+            车牌号：闽AM0039
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            卡号：1000113500002888881(中石化)
+        </b>
+        <table id="dt_month_account_group_0" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0"
+               border="0">
+            <thead>
+            <tr>
+                <td>统计月份</td>
+                <td>上个月卡余额</td>
+                <td>本月充值(元)</td>
+                <td>本月加油(元)</td>
+                <td>本月加油(升)</td>
+                <td>本月卡余额</td>
+                <td class="td_right">详情</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>&nbsp;2014-08</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888881&amp;startDate=2014-08-01 00:00:00&amp;endDate=2014-08-31 23:59:59">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;2014-07</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888881&amp;startDate=2014-07-01 00:00:00&amp;endDate=2014-07-31 23:59:59">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;2014-06</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888881&amp;startDate=2014-06-01 00:00:00&amp;endDate=2014-06-30 23:59:59">详情</a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td class="pageset" colspan="7" style="border: 0;">
+                    <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1"
+                                                                                                       size="2"
+                                                                                                       class="elanCurrentPage">页/共<span
+                            class="elanTotalPage">1</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp; 下一页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                            class="elanTotalSize">3</span>条数据，显示<span class="elanFromStart">1</span>-<span
+                            class="elanFromEnd">3</span>条
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <b style="font-size: 13px;">
+            车牌号：闽AM0089
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            卡号：1000113500002888880(中石化)
+        </b>
+        <table id="dt_month_account_group_1" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0"
+               border="0">
+            <thead>
+            <tr>
+                <td>统计月份</td>
+                <td>上个月卡余额</td>
+                <td>本月充值(元)</td>
+                <td>本月加油(元)</td>
+                <td>本月加油(升)</td>
+                <td>本月卡余额</td>
+                <td class="td_right">详情</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>&nbsp;2014-08</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888880&amp;startDate=2014-08-01 00:00:00&amp;endDate=2014-08-31 23:59:59">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;2014-07</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888880&amp;startDate=2014-07-01 00:00:00&amp;endDate=2014-07-31 23:59:59">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;2014-06</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888880&amp;startDate=2014-06-01 00:00:00&amp;endDate=2014-06-30 23:59:59">详情</a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td class="pageset" colspan="7" style="border: 0;">
+                    <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1"
+                                                                                                       size="2"
+                                                                                                       class="elanCurrentPage">页/共<span
+                            class="elanTotalPage">1</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp; 下一页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                            class="elanTotalSize">3</span>条数据，显示<span class="elanFromStart">1</span>-<span
+                            class="elanFromEnd">3</span>条
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <b style="font-size: 13px;">
+            车牌号：闽AC0006
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            卡号：1000113500002888671(中石化)
+        </b>
+        <table id="dt_month_account_group_2" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0"
+               border="0">
+            <thead>
+            <tr>
+                <td>统计月份</td>
+                <td>上个月卡余额</td>
+                <td>本月充值(元)</td>
+                <td>本月加油(元)</td>
+                <td>本月加油(升)</td>
+                <td>本月卡余额</td>
+                <td class="td_right">详情</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>&nbsp;2014-08</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888671&amp;startDate=2014-08-01 00:00:00&amp;endDate=2014-08-31 23:59:59">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;2014-07</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888671&amp;startDate=2014-07-01 00:00:00&amp;endDate=2014-07-31 23:59:59">详情</a>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;2014-06</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0.0</td>
+                <td>&nbsp;0</td>
+                <td>&nbsp;0</td>
+                <td class="td_right">&nbsp;<a
+                        href="card/gas_card/cardInfo.htm?search_no=1000113500002888671&amp;startDate=2014-06-01 00:00:00&amp;endDate=2014-06-30 23:59:59">详情</a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td class="pageset" colspan="7" style="border: 0;">
+                    <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1"
+                                                                                                       size="2"
+                                                                                                       class="elanCurrentPage">页/共<span
+                            class="elanTotalPage">1</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp; 下一页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                            class="elanTotalSize">3</span>条数据，显示<span class="elanFromStart">1</span>-<span
+                            class="elanFromEnd">3</span>条
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+    </div>
+
+</form>
+
+
+</body>
+</html>

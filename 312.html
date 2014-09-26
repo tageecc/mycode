@@ -1,0 +1,345 @@
+<html>
+<head>
+    <title>加油明细</title>
+
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hczd-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src=" js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <script type="text/javascript">
+        $(function () {
+
+
+            $('#dt_cardInfo_group_1').elanGrid({
+                pageable: true,
+                url: 'card/gas_card/ajax_cardInfo_list.htm?search_no=&startDate=&endDate=',
+                columns: [
+                    {title: '加油卡号', field: 'card_no'},
+                    {title: '车牌号', field: 'vehicle_no'},
+                    {title: '时间', field: 'time'},
+                    {title: '地点', formatter: function (clValue, rowIndex, rowData) {
+                        return rowData.addr == null ? "" : rowData.addr;
+                    }},
+                    {title: '圈存金额', formatter: function (value, rowIndex, rowData) {
+                        var app_num = rowData.app_num == null ? "---" : (parseFloat(rowData.app_num) > 0 ? rowData.app_num : (rowData.app_num + "(补充分配)"));
+                        return app_num;
+                    }},
+                    {title: '加油量', field: 'amount'},
+                    {title: '油品', formatter: function (clValue, rowIndex, rowData) {
+                        if (rowData.oil == "10") {
+                            return "0#柴油";
+                        } else if (rowData.oil == "11") {
+                            return "-30#柴油";
+                        } else if (rowData.oil == "12") {
+                            return "93#汽油";
+                        } else if (rowData.oil == "26") {
+                            return "97#汽油";
+                        } else {
+                            return "---";
+                        }
+                    }},
+                    {title: '消费额', formatter: function (clValue, rowIndex, rowData) {
+                        return rowData.money_num != null ? (Math.round(rowData.money_num * 100) / 100) : "";
+                    }},
+                    {title: '单价', formatter: function (clValue, rowIndex, rowData) {
+                        return rowData.money_num != null && rowData.amount != 0 ? (Math.round((rowData.money_num / rowData.amount) * 100) / 100) : "0";
+                    }},
+                    {title: '卡余额', formatter: function (value, rowIndex, rowData) {
+                        return rowData.current_balance == null ? "0.0" : rowData.current_balance;
+                    }}
+                ],
+                pagesize: 10,
+                pageable: true,
+                extradata: {}
+            });
+
+
+        });
+
+        // 导出EXCEL
+        function deriveExcel() {
+            parent.document.getElementById('sd').src = 'card/gas_card/cardInfo_excel.htm?search_no=' + $("#search_no").val() + '&startDate=' + $("#start_date").datetimebox("getValue") + '&endDate=' + $("#end_date").datetimebox("getValue");
+        }
+
+    </script>
+</head>
+
+<body>
+<form id="cardInfoForm" action="card/gas_card/cardInfo.htm" method="post">
+    <div class="bar3">
+        车牌号/卡号： <input type="text" id="search_no" name="search_no" style="width:170px;" value=""> 时间：
+        <input type="text" id="start_date" value="" class="easyui-datetimebox combo-f datetimebox-f"
+               style="width: 120px; display: none;" comboname="startDate"> - <input
+            type="text" id="end_date" value="" class="easyui-datetimebox combo-f datetimebox-f"
+            style="width: 120px; display: none;" comboname="endDate">
+        <!-- <input type="button" id="search" class="search" onclick="javascript:$('#cardInfoForm').submit();" style="cursor: hand;" /> -->
+        <a href="javascript:void(0);" onclick="javascript:$('#cardInfoForm').submit();" class="easyui-linkbutton l-btn"
+           group="" ><span class="l-btn-left"><span class="l-btn-text">查询</span></span></a>
+    </div>
+    <div style="display: inline-block;margin: 10px;">
+        <div class="bar4" style="float: right;">
+
+            <!-- <button type="button" onclick="deriveExcel();"><span class="icon-excel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>导出表格</button> -->
+            <a href="javascript:void(0);" onclick="deriveExcel();" class="easyui-linkbutton l-btn" group="" id=""><span
+                    class="l-btn-left"><span class="l-btn-text">导出Excel表格</span></span></a>
+
+        </div>
+        总分配额：元&nbsp;&nbsp;总消费额：元&nbsp;&nbsp;(
+
+        )(注:<span style="color: red;">请在上面的文本框中输入您要查询的车牌号或卡号</span>)
+    </div>
+
+
+    <div style="width:100%;overflow: auto;">
+        <table id="dt_cardInfo_group_1" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0"
+               border="0">
+            <thead>
+            <tr>
+                <td>加油卡号</td>
+                <td>车牌号</td>
+                <td>时间</td>
+                <td>地点</td>
+                <td>圈存金额</td>
+                <td>加油量</td>
+                <td>油品</td>
+                <td>消费额</td>
+                <td>单价</td>
+                <td class="td_right">卡余额</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr></tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td class="pageset" colspan="10" style="border: 0;">
+                    <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1"
+                                                                                                       size="2"
+                                                                                                       class="elanCurrentPage">页/共<span
+                            class="elanTotalPage">0</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp; 下一页&nbsp; </a>&nbsp;&nbsp;<a
+                            href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                            class="elanTotalSize">0</span>条数据，显示<span class="elanFromStart">0</span>-<span
+                            class="elanFromEnd">0</span>条
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+        <br>
+    </div>
+
+
+</form>
+
+
+<div class="panel combo-p" style="position: absolute; z-index: 10; display: none; width: 180px;">
+    <div class="combo-panel panel-body panel-body-noheader" title="" id="" style="width: 178px; height: auto;">
+        <div class="datebox-calendar-inner">
+            <div class="calendar calendar-noborder" style="width: 0px; height: 178px;">
+                <div class="calendar-header">
+                    <div class="calendar-prevmonth"></div>
+                    <div class="calendar-nextmonth"></div>
+                    <div class="calendar-prevyear"></div>
+                    <div class="calendar-nextyear"></div>
+                    <div class="calendar-title"><span>九月 2014</span></div>
+                </div>
+                <div class="calendar-body" style="height: 156px;">
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <thead>
+                        <tr>
+                            <th>日</th>
+                            <th>一</th>
+                            <th>二</th>
+                            <th>三</th>
+                            <th>四</th>
+                            <th>五</th>
+                            <th>六</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,8,31">31</td>
+                            <td class="calendar-day" abbr="2014,9,1">1</td>
+                            <td class="calendar-day" abbr="2014,9,2">2</td>
+                            <td class="calendar-day" abbr="2014,9,3">3</td>
+                            <td class="calendar-day" abbr="2014,9,4">4</td>
+                            <td class="calendar-day" abbr="2014,9,5">5</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,6">6</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,7">7</td>
+                            <td class="calendar-day" abbr="2014,9,8">8</td>
+                            <td class="calendar-day" abbr="2014,9,9">9</td>
+                            <td class="calendar-day" abbr="2014,9,10">10</td>
+                            <td class="calendar-day" abbr="2014,9,11">11</td>
+                            <td class="calendar-day" abbr="2014,9,12">12</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,13">13</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,14">14</td>
+                            <td class="calendar-day" abbr="2014,9,15">15</td>
+                            <td class="calendar-day" abbr="2014,9,16">16</td>
+                            <td class="calendar-day" abbr="2014,9,17">17</td>
+                            <td class="calendar-day" abbr="2014,9,18">18</td>
+                            <td class="calendar-day" abbr="2014,9,19">19</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,20">20</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,21">21</td>
+                            <td class="calendar-day" abbr="2014,9,22">22</td>
+                            <td class="calendar-day" abbr="2014,9,23">23</td>
+                            <td class="calendar-day" abbr="2014,9,24">24</td>
+                            <td class="calendar-day" abbr="2014,9,25">25</td>
+                            <td class="calendar-day calendar-today calendar-selected" abbr="2014,9,26">26</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,27">27</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,28">28</td>
+                            <td class="calendar-day" abbr="2014,9,29">29</td>
+                            <td class="calendar-day" abbr="2014,9,30">30</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,1">1</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,2">2</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,3">3</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,4">4</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,10,5">5</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,6">6</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,7">7</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,8">8</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,9">9</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,10">10</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,11">11</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="calendar-menu" style="display: none;">
+                        <div class="calendar-menu-year-inner"><span class="calendar-menu-prev"></span><span><input
+                                class="calendar-menu-year" type="text"></span><span class="calendar-menu-next"></span>
+                        </div>
+                        <div class="calendar-menu-month-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:2px"><span class="spinner" style="width: 78px; height: 20px;"><input
+                style="width: 60px; height: 20px; line-height: 20px;"
+                class="timespinner-f spinner-text spinner-f validatebox-text"><span class="spinner-arrow"
+                                                                                    style="height: 20px;"><span
+                class="spinner-arrow-up" style="height: 10px;"></span><span class="spinner-arrow-down"
+                                                                            style="height: 10px;"></span></span></span>
+        </div>
+        <div class="datebox-button"><a href="javascript:void(0)" class="datebox-current">今天</a><a
+                href="javascript:void(0)" class="datebox-close">关闭</a><a href="javascript:void(0)"
+                                                                         class="datebox-ok">确定</a></div>
+    </div>
+</div>
+<div class="panel combo-p" style="position: absolute; z-index: 10; display: none; width: 180px;">
+    <div class="combo-panel panel-body panel-body-noheader" title="" id="" style="width: 178px; height: auto;">
+        <div class="datebox-calendar-inner">
+            <div class="calendar calendar-noborder" style="width: 0px; height: 178px;">
+                <div class="calendar-header">
+                    <div class="calendar-prevmonth"></div>
+                    <div class="calendar-nextmonth"></div>
+                    <div class="calendar-prevyear"></div>
+                    <div class="calendar-nextyear"></div>
+                    <div class="calendar-title"><span>九月 2014</span></div>
+                </div>
+                <div class="calendar-body" style="height: 156px;">
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <thead>
+                        <tr>
+                            <th>日</th>
+                            <th>一</th>
+                            <th>二</th>
+                            <th>三</th>
+                            <th>四</th>
+                            <th>五</th>
+                            <th>六</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,8,31">31</td>
+                            <td class="calendar-day" abbr="2014,9,1">1</td>
+                            <td class="calendar-day" abbr="2014,9,2">2</td>
+                            <td class="calendar-day" abbr="2014,9,3">3</td>
+                            <td class="calendar-day" abbr="2014,9,4">4</td>
+                            <td class="calendar-day" abbr="2014,9,5">5</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,6">6</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,7">7</td>
+                            <td class="calendar-day" abbr="2014,9,8">8</td>
+                            <td class="calendar-day" abbr="2014,9,9">9</td>
+                            <td class="calendar-day" abbr="2014,9,10">10</td>
+                            <td class="calendar-day" abbr="2014,9,11">11</td>
+                            <td class="calendar-day" abbr="2014,9,12">12</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,13">13</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,14">14</td>
+                            <td class="calendar-day" abbr="2014,9,15">15</td>
+                            <td class="calendar-day" abbr="2014,9,16">16</td>
+                            <td class="calendar-day" abbr="2014,9,17">17</td>
+                            <td class="calendar-day" abbr="2014,9,18">18</td>
+                            <td class="calendar-day" abbr="2014,9,19">19</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,20">20</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,21">21</td>
+                            <td class="calendar-day" abbr="2014,9,22">22</td>
+                            <td class="calendar-day" abbr="2014,9,23">23</td>
+                            <td class="calendar-day" abbr="2014,9,24">24</td>
+                            <td class="calendar-day" abbr="2014,9,25">25</td>
+                            <td class="calendar-day calendar-today calendar-selected" abbr="2014,9,26">26</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,27">27</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,28">28</td>
+                            <td class="calendar-day" abbr="2014,9,29">29</td>
+                            <td class="calendar-day" abbr="2014,9,30">30</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,1">1</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,2">2</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,3">3</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,4">4</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,10,5">5</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,6">6</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,7">7</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,8">8</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,9">9</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,10">10</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,11">11</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="calendar-menu" style="display: none;">
+                        <div class="calendar-menu-year-inner"><span class="calendar-menu-prev"></span><span><input
+                                class="calendar-menu-year" type="text"></span><span class="calendar-menu-next"></span>
+                        </div>
+                        <div class="calendar-menu-month-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:2px"><span class="spinner" style="width: 78px; height: 20px;"><input
+                style="width: 60px; height: 20px; line-height: 20px;"
+                class="timespinner-f spinner-text spinner-f validatebox-text"><span class="spinner-arrow"
+                                                                                    style="height: 20px;"><span
+                class="spinner-arrow-up" style="height: 10px;"></span><span class="spinner-arrow-down"
+                                                                            style="height: 10px;"></span></span></span>
+        </div>
+        <div class="datebox-button"><a href="javascript:void(0)" class="datebox-current">今天</a><a
+                href="javascript:void(0)" class="datebox-close">关闭</a><a href="javascript:void(0)"
+                                                                         class="datebox-ok">确定</a></div>
+    </div>
+</div>
+</body>
+</html>

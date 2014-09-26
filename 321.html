@@ -1,0 +1,254 @@
+<html>
+<head>
+    <title>通行卡业务</title>
+
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hczd-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src=" js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <script type="text/javascript">
+        $(function () {
+            /**
+             *数据显示
+             **/
+            $('#dt_card_group').elanGrid({
+                url: 'http://www.ihczd.com:80/hczd-client/access/access_card/ajax_list.htm',
+                pageable: true,
+                columns: [
+                    {title: '<input type="checkbox" id="allselect" onclick="allselect();">', formatter: function (value, rowIndex, rowData) {
+                        var html = "<input type='checkbox' name='selectCard' value='" + rowData.status + "' title='" + rowData.id + "' alt='" + rowData.card_no + "' onclick='checkedIf(this);' />";
+                        if ($("#checked_two").html().indexOf(rowData.card_no) != -1) {
+                            if ($("#" + rowData.card_no).attr("checked"))
+                                html = "<input type='checkbox' name='selectCard' value='" + rowData.status + "' checked='checked' title='" + rowData.id + "' alt='" + rowData.card_no + "' onclick='checkedIf(this);' />";
+                        } else {
+                            $("#checked_two").append("<input type='checkbox' name='selectCard' id='" + rowData.card_no + "' value='" + rowData.status + "'  style='display: none;' title='" + rowData.id + "' />");
+                        }
+                        return html;
+                    }},
+                    {title: '状态', formatter: function (value, rowIndex, rowData) {
+                        return cardStatus(rowData.status);
+                    }},
+                    {title: '卡号', formatter: function (value, rowIndex, rowData) {
+                        return "<a href='http://www.ihczd.com:80/hczd-client/access/access_card_consumption_log/list.htm?id=" + rowData.id + "'>" + rowData.card_no + "</a>";
+                    }},
+                    {field: 'vehicle_no', title: '车牌号'},
+                    {field: 'area', title: '所属区域', align: 'center'},
+                    {title: '卡密码', formatter: function (value, rowIndex, rowData) {
+                        return (rowData.password == "null" || rowData.password == null) ? "---" : rowData.password;
+                    }},
+                    {title: '卡余额', formatter: function (value, rowIndex, rowData) {
+                        return "<b>" + rowData.balance + "</b>"
+                    }},
+                    {field: 'registerdate', title: '开卡日期'},
+                    {field: 'deadline', title: '有效期'},
+                    {field: 'remark', title: '备注'}
+
+                ],
+                pagesize: 10,
+                pageable: true,
+                extradata: {
+                    status: 2
+                },
+                onLoadSuccess: function () {
+                    document.getElementById("allselect").checked = false;
+                }
+            });
+        });
+
+        //选择
+        function checkedIf(ele) {
+            if (ele.checked) {
+                $("#" + $(ele).attr("alt")).attr("checked", "checked");
+            } else {
+                $("#" + $(ele).attr("alt")).attr("checked", false);
+            }
+        }
+
+        //分配申请
+        function app_assign() {
+            if ($("input[name='selectCard']:checked").length != 0) {
+                var ids = "";
+                var bool = true;
+                $("input[name='selectCard']:checked").each(function (evel) {
+                    if ($(this).val() == 2) {
+                        if (ids == "") {
+                            ids = $(this).attr("title");
+                        } else {
+                            ids += ("," + $(this).attr("title"));
+                        }
+                    } else {
+                        bool = false;
+                    }
+                })
+                if (bool) {
+                    $.messager.confirm("提示", "您确定要为选择的这些卡分配申请吗？", function (bool) {
+                        if (bool) {
+                            parent.document.getElementById("sd").src = "http://www.ihczd.com:80/hczd-client/access/access_card/app_assign.htm?ids=" + ids;
+                        }
+                    });
+                } else {
+                    $.messager.alert("提示", "只有状态正常的卡才能分配");
+                }
+            } else {
+                $.messager.alert("提示", "您还没有选择要分配申请的记录");
+            }
+        }
+
+        //搜索加载数据
+        function search_data() {
+            //设置分页时查询条件
+            $('#dt_card_group').elanGrid({
+                queryParams: {
+                    card_no: $('#card_no').val(),
+                    status: $("input[id='status']:checked").val() == null ? "2" : ""
+                }
+            });
+            $('#dt_card_group').elanGrid('load');
+        }
+
+        //判断车辆状态
+        function cardStatus(status) {
+            if (status == "-2") {
+                return "<span style='color:red;'>挂失</span>";
+            } else if (status == "-3") {
+                return "<span style='color:blue;'>申请换卡</span>";
+            } else if (status == "-4") {
+                return "<span style='color:blue;'>申请退卡</span>";
+            } else if (status == "2") {
+                return "<span style='color:green;'>正常</span>";
+            } else if (status == "0") {
+                return "<span style='color:red;'>禁用</span>";
+            } else if (status == "-5") {
+                return "<span style='color:red;'>退卡</span>";
+            } else if (status == "-6") {
+                return "<span style='color:red;'>欠费</span>";
+            } else {
+                return "<span style='color:gray;'>未知</span>";
+            }
+        }
+
+        //账户充值
+        function affirmEvent() {
+            $.messager.confirm("提示", "请认真核对，确认无误请点击确定。", function (b) {
+                if (b) {
+                    //遮罩层,防止多次点击
+                    hczd_client.loader.show();
+                    $.post("http://www.ihczd.com:80/hczd-client/access/access_card_account/save.htm", {"number": $("#number").val()}, function (data) {
+                        if (isNaN(data)) {
+                            $.messager.alert("提示", data, "error");
+                        } else {
+                            $.messager.alert("提示", "已经成功充值", "info");
+                            parent.document.getElementById('sd').src = "http://www.ihczd.com:80/hczd-client/access/access_card/list_handle.htm";
+                        }
+                        hczd_client.loader.close();
+                    });
+                }
+            });
+        }
+
+        function clearItem() {
+            $("input[name='selectCard']:checked").each(function (evel) {
+                $(this).attr("checked", false);
+                checkedIf(this);
+            });
+            document.getElementById("allselect").checked = false;
+            search_data();
+        }
+
+        function allselect() {
+            var ele = document.getElementById("allselect");
+            if (ele.checked) {
+                $("input[name='selectCard']").each(function (evel) {
+                    if ($(this).css("display") != "none") {
+                        $(this).attr("checked", true);
+                        checkedIf(this);
+                    }
+                });
+            } else {
+                $("input[name='selectCard']:checked").each(function (evel) {
+                    if ($(this).css("display") != "none") {
+                        $(this).attr("checked", false);
+                        checkedIf(this);
+                    }
+                });
+                search_data();
+            }
+        }
+    </script>
+</head>
+<body>
+<div>
+    <div class="bar3">
+        <b>通行卡账户余额：0</b>&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>基本账户可用余额：0</b>&nbsp;&nbsp;&nbsp;&nbsp;
+			
+				<span>
+					通行卡账户充值：<input type="text" id="number">
+	  				<a href="javascript:void(0);" onclick="affirmEvent();" class="easyui-linkbutton l-btn" group=""
+                       id=""><span class="l-btn-left"><span class="l-btn-text">充值</span></span></a>
+				</span>
+
+
+    </div>
+
+    <div class="bar3">
+        <div class="jslx">
+            <span>卡号：</span>
+            <input type="text" id="card_no">
+            <a href="javascript:void(0);" onclick="search_data();" class="easyui-linkbutton l-btn" group="" id=""><span
+                    class="l-btn-left"><span class="l-btn-text">查询</span></span></a>
+            &nbsp;&nbsp;&nbsp;
+            <b style="color: red;">注：点击卡号可查看该卡的消费明细</b>
+        </div>
+    </div>
+    <div class="bar4" style="float: right; margin: 5px">
+        <input type="checkbox" id="status" value="2" onclick="search_data();">显示退换卡
+
+        <a href="javascript:void(0);" onclick="app_assign();" class="easyui-linkbutton l-btn" group="" id=""><span
+                class="l-btn-left"><span class="l-btn-text">分配申请</span></span></a>
+
+    </div>
+</div>
+<a href="javascript:void(0);" onclick="clearItem();">清除已选择的项</a>
+<table id="dt_card_group" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0" border="0">
+    <thead>
+    <tr>
+        <td><input type="checkbox" id="allselect" onclick="allselect();"></td>
+        <td>状态</td>
+        <td>卡号</td>
+        <td>车牌号</td>
+        <td>所属区域</td>
+        <td>卡密码</td>
+        <td>卡余额</td>
+        <td>开卡日期</td>
+        <td>有效期</td>
+        <td class="td_right">备注</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr></tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td class="pageset" colspan="10" style="border: 0;">
+            <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                    href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1" size="2"
+                                                                                               class="elanCurrentPage">页/共<span
+                    class="elanTotalPage">0</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp;
+                下一页&nbsp; </a>&nbsp;&nbsp;<a href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                    class="elanTotalSize">0</span>条数据，显示<span class="elanFromStart">0</span>-<span
+                    class="elanFromEnd">0</span>条
+            </div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+<div id="checked_two"></div>
+
+
+</body>
+</html>

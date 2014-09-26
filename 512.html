@@ -1,0 +1,234 @@
+<html>
+<head>
+    <title>车辆监控</title>
+
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hczd-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/getscript?v=1.4&amp;ak=&amp;services=&amp;t=20140320104738"></script>
+    <script type="text/javascript">
+        function SetInfor(c, index) {
+            if (c != null) {
+
+                var XX = c.substring(0, c.indexOf(","));
+                var YY = c.substring(c.indexOf(",") + 1, c.length);
+                var point = new BMap.Point(XX, YY);
+                BMap.Convertor.translate(point, 0, function (point) {
+                    var gc = new BMap.Geocoder();
+                    gc.getLocation(point, function (rs) {
+                        var addComp = rs.addressComponents;
+                        $("#add_" + index).html(
+                                        addComp.province + addComp.city + addComp.district
+                                        + addComp.street + addComp.streetNumber);
+                    });
+                });
+
+            }
+        }
+
+        $(function () {
+            $('#dt_status_group').elanGrid({
+                url: 'vehicle/status/ajax_list.htm',
+                pageable: true,
+                columns: [
+                    {
+                        title: '选择',
+                        formatter: function (value, rowIndex, rowData) {
+                            return "<input type='checkbox' name='selectVehicle' value='" + rowData.id + "' title='" + rowData.vehicle_no + "' />"
+                        }
+                    },
+                    {
+                        field: 'vehicle_no',
+                        title: '车牌号'
+                    },
+                    {
+                        title: '当前位置',
+                        formatter: function (value, rowindex, rowData) {
+                            SetInfor(rowData.Address,
+                                    rowData.vehicle_no);
+
+                            return "<a href='vehicle/status/currentPosition.htm?vehicle_no="
+                                    + rowData.vehicle_no
+                                    + "' title='点击当前位置能查看该车辆当前所在地图上的位置'><span id='add_" + rowData.vehicle_no + "'></span></a>";
+                        }
+                    },
+                    {
+                        title: '车辆轨迹',
+                        formatter: function (value, rowindex, rowData) {
+                            return "<a href='vehicle/status/mapView.htm?vehicle_no="
+                                    + rowData.vehicle_no
+                                    + "' title='点击查询能查看该车辆在地图的历史轨迹和运行记录'>查询</a>";
+                        }
+                    },
+                    {
+                        field: 'Times',
+                        title: '上报时间'
+                    },
+                    {
+                        field: 'CarStatuse',
+                        title: '状态'
+                    },
+                    {
+                        field: 'CardStatuse',
+                        title: '卡状态'
+                    },
+                    {
+                        title: '当天累计油耗(L)',
+                        formatter: function (value, rowIndex, rowData) {
+                            return "<a href='vehicle/status/oilWear.htm?realtime=realtime&vehicle_no="
+                                    + rowData.vehicle_no
+                                    + "' title='点击该数据能查看该车辆的历史油耗明细' >"
+                                    + (Math
+                                            .round((isNaN(rowData.OilConsumption) ? 0
+                                                    : rowData.OilConsumption * 100)) / 100)
+                                    + "</a>";
+                        }
+                    },
+                    {
+                        title: '加油卡余额(元)',
+                        formatter: function (value, rowIndex, rowData) {
+                            return (rowData.FuelCardBalance == "" || rowData.FuelCardBalance == null) ? "<a href='vehicle/status/cardRecord.htm?vehicle_no="
+                                    + rowData.vehicle_no
+                                    + "&vehicle_id=" + rowData.id + "'>0</a>"
+                                    : "<a href='vehicle/status/cardRecord.htm?vehicle_no="
+                                    + rowData.vehicle_no
+                                    + "&vehicle_id=" + rowData.id + "' title='点击该数据能查看该车辆的加油卡消费、圈存明细' >"
+                                    + rowData.FuelCardBalance
+                                    + "</a>";
+                        }
+                    }
+                ],
+                pagesize: 10,
+                pageable: true,
+                extradata: {}
+            });
+
+            //定时刷新
+            setInterval(ref, 30000);
+        });
+
+        //搜索加载数据
+        function search_data() {
+            //设置分页时查询条件
+            $('#dt_status_group').elanGrid({
+                queryParams: {
+                    vehicle_no: $('#vehicle_no').val()
+                }
+            });
+            $('#dt_status_group').elanGrid('load');
+        }
+
+        function ref() {
+            $('#dt_status_group').elanGrid('load');
+        }
+
+        //异常提醒设置
+        function SetNotePark() {
+            if ($("input[name='selectVehicle']:checked").length != 0) {
+                var vehicle_no = "";
+                $("input[name='selectVehicle']:checked").each(function (evel) {
+                    if (vehicle_no == "") {
+                        vehicle_no = $(this).val();
+                    } else {
+                        vehicle_no += ("," + $(this).val());
+                    }
+                })
+                parent.document.getElementById("sd").src = "http://183.136.236.162:8081/Note/SetNotePark.aspx?ParamID="
+                        + escape(vehicle_no);
+            } else {
+                $.messager.alert("提示", "您还没有选择要异常提醒设置的车辆");
+            }
+        }
+
+        //车辆运程服务
+        function FortuneManageSet() {
+            if ($("input[name='selectVehicle']:checked").length != 0) {
+                var vehicle_no = "";
+                $("input[name='selectVehicle']:checked").each(function (evel) {
+                    if (vehicle_no == "") {
+                        vehicle_no = $(this).val();
+                    } else {
+                        vehicle_no += ("," + $(this).val());
+                    }
+                })
+                parent.document.getElementById("sd").src = "http://183.136.236.162:8081/FortuneManageSet.aspx?ParamID="
+                        + escape(vehicle_no);
+            } else {
+                $.messager.alert("提示", "您还没有选择要运程服务的车辆");
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+<div class="bar3">
+    <span>车牌号：</span>
+    <input type="text" id="vehicle_no"> <!-- <input
+							type="button" id="search" class="search" onclick="search_data();"
+							style="cursor: hand;" /> -->
+    <a href="javascript:void(0);" onclick="search_data();" class="easyui-linkbutton l-btn" group="" id=""><span
+            class="l-btn-left"><span class="l-btn-text">查询</span></span></a>
+</div>
+<div class="bar4" style="float: right;">
+
+    <!-- <button type="button" onclick="SetNotePark();">
+        <span class="icon-tip">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>异常提醒设置
+    </button> -->
+    <a href="javascript:void(0);" onclick="SetNotePark();" class="easyui-linkbutton l-btn" group="" id=""><span
+            class="l-btn-left"><span class="l-btn-text">异常提醒设置</span></span></a>
+
+
+    <!-- <button type="button" onclick="FortuneManageSet();">
+        <span class="icon-redo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>车辆运程服务
+    </button> -->
+    <a href="javascript:void(0);" onclick="FortuneManageSet();" class="easyui-linkbutton l-btn" group="" id=""><span
+            class="l-btn-left"><span class="l-btn-text">车辆运程服务</span></span></a>
+
+</div>
+<br>
+&nbsp;<br>
+
+<table id="dt_status_group" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0" border="0">
+    <thead>
+    <tr>
+        <td>选择</td>
+        <td>车牌号</td>
+        <td>当前位置</td>
+        <td>车辆轨迹</td>
+        <td>上报时间</td>
+        <td>状态</td>
+        <td>卡状态</td>
+        <td>当天累计油耗(L)</td>
+        <td class="td_right">加油卡余额(元)</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr></tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td class="pageset" colspan="9" style="border: 0;">
+            <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                    href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1" size="2"
+                                                                                               class="elanCurrentPage">页/共<span
+                    class="elanTotalPage">0</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp;
+                下一页&nbsp; </a>&nbsp;&nbsp;<a href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                    class="elanTotalSize">0</span>条数据，显示<span class="elanFromStart">0</span>-<span
+                    class="elanFromEnd">0</span>条
+            </div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+
+
+</body>
+</html>

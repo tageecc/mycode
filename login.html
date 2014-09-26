@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>和诚智达-登录</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script src="css/login/scripts.js"></script>
+    <link rel="stylesheet" href="css/login/supersized.css">
+    <link rel="stylesheet" href="css/login/style.css">
+    <script type="text/javascript">
+        //回车键进行登录
+        $(function () {
+            $('#f1_password').bind('keyup', function (event) {
+                if (event.keyCode == 13) {
+                    validateAccount();
+                }
+            });
+
+            $('#f2_password').bind('keyup', function (event) {
+                if (event.keyCode == 13) {
+                    validateCompanyAccount();
+                }
+            });
+        });
+
+        var c_val = "";
+        //加载域名
+        function loadDns(obj) {
+            var val = $(obj).val();
+            //alert(val);
+            if (val && c_val != val && val.length > 1) {
+                $.get('account_userdns', {username: val}, function (data) {
+                    $('#f2_userdns').empty();
+
+                    var t_cmps = JSON.parse(data);
+
+                    $(t_cmps).each(function (i) {
+                        $('#f2_userdns').append('<option value="' + t_cmps[i].key + '">' + t_cmps[i].value + '</option>');
+                    });//end each
+                });
+                c_val = val;
+            }//end if
+        }//end function
+        /**
+         *ajax验证账户信息是否正确提示相应的账号信息
+         **/
+        function validateAccount() {
+            var username = $('#f1_username').val();
+            var password = $('#f1_password').val();
+            var usertype = $('#f1_usertype').val();
+            var site = 'null';
+            var resolution = '';
+            var userdns = '';
+            $.post('account_validate', {username: username, password: password, usertype: usertype, site: site, resolution: resolution, userdns: userdns}, function (data) {
+                if (isNaN(data)) {
+                    alert(data);
+                } else {
+                    window.personForm.submit();
+                }
+            });
+        }
+        /**
+         *ajax验证账户信息是否正确提示相应的账号信息
+         **/
+        function validateCompanyAccount() {
+            var username = $('#f2_username').val();
+            var password = $('#f2_password').val();
+            var usertype = '2';
+            var site = 'null';
+            var resolution = '';
+            var userdns = $('#f2_userdns').val();
+            ;
+            $.post('account_validate', {username: username, password: password, usertype: usertype, site: site, resolution: resolution, userdns: userdns}, function (data) {
+                if (isNaN(data)) {
+                    alert(data);
+                } else {
+                    window.companyForm.submit();
+                }
+            });
+        }
+
+        /**
+         *添加收藏
+         */
+        function addFavorte() {
+            if (typeof(window.external.AddFavorite) != 'undefined') {
+                window.external.AddFavorite(window.location, '和诚智达-智汇车管');
+            } else {
+                alert('请使用CTRL+D进行收藏');
+            }
+        }
+
+
+    </script>
+</head>
+<body style="background-image:url(images/123.jpg);">
+<div class="nav">
+    <div class="nav_01"><a href="javascript:void(0);" onclick="addFavorte()" title="将本站加如您的收藏夹">收藏本站</a></div>
+    <!-- <div class="nav_02"><span>欢迎来到和诚智达！</span><a href="javascript:void(0);">[登录]</a><a href="javascript:void(0);">[注册]</a></div> -->
+    <div class="nav_03">
+        <a target="_blank" href="">智汇车管</a><span>
+						|</span> <a target="_blank" href="">车队汇</a><span>
+						|</span><a target="_blank" href="">淘油网</a><span>
+						|</span> <a target="_blank" href="">运盈e贷</a>
+    </div>
+</div>
+<div id="logo">
+    <img src="https://passport.ihczd.com/css/login/logo.png">
+    <hr style="background: #2771cc;margin-top: 10px">
+    <p>和诚智达淘油网以轻松养车为宗旨,为私家车主提供汽车加油、保险、养护等汽车后市场服务;以品质生活,消费“油”礼的理念打造专为车主服务的礼享商城,提供满足车主...</p>
+</div>
+<div class="page-container">
+
+    <div class="title">
+        <span>登录</span>
+    </div>
+    <div class="container">
+        <div class="tab">
+            <ul class="tabs active">
+                <li class="current"><a href="#">个人用户登录</a></li>
+                <li><a href="#">企业用户登录</a></li>
+            </ul>
+            <!-- / tabs -->
+            <div class="tab_content">
+                <div class="tabs_item">
+                    <form id="fm1" name="personForm" class="fm-v clearfix" action="" method="post">
+
+                        <input type="hidden" name="lt"
+                               value="LT-30891-xOeJpbTBMTglXgjq5Te0XcvUn3Hq36-cas01.example.org">
+                        <input type="hidden" name="execution" value="e1s1">
+                        <input type="hidden" name="_eventId" value="submit">
+                        <input type="hidden" id="f1_usertype" name="usertype" value="0">
+                        <input type="text" id="f1_username" name="username" class="username" placeholder="用户名/手机号/邮箱">
+                        <input type="password" id="f1_password" name="password" class="password" placeholder="请输入您的密码">
+                        <button type="button" onclick="validateAccount()" class="submit_button">登&nbsp;&nbsp;&nbsp;&nbsp;录</button>
+                    </form>
+                </div>
+                <!-- / tabs_item -->
+                <div class="tabs_item">
+                    <form id="fm12" name="companyForm" class="fm-v clearfix" action="" method="post">
+                        <input type="text" id="f2_username" name="username" class="username" onkeyup="loadDns(this);"
+                               placeholder="用户名/手机号/邮箱/企业账号" style="width: 58%;">
+                        <!-- <input type="text" name="" class="username" placeholder="请输入域名" style="width: 130px;"> -->
+                        <select class="select_input" name="userdns" id="f2_userdns" height="18"
+                                style="font-size: 14px;width: 36%;color: #666;font-weight: lighter; padding: 5px; padding: 0px\9;">
+                            <option value="">请选择域名</option>
+                        </select>
+                        <input type="password" id="f2_password" name="password" class="password" placeholder="请输入您的密码">
+
+                        <button type="button" onclick="validateCompanyAccount()" class="submit_button">登&nbsp;&nbsp;&nbsp;&nbsp;录</button>
+                        <input type="hidden" name="lt"
+                               value="LT-30891-xOeJpbTBMTglXgjq5Te0XcvUn3Hq36-cas01.example.org">
+                        <input type="hidden" name="execution" value="e1s1">
+                        <input type="hidden" name="_eventId" value="submit">
+                        <input type="hidden" name="usertype" value="2">
+                    </form>
+                </div>
+                <span class="reg_span">
+                    <a href="http://www.ihczd.com/hczd-client/authority/login/register.htm"
+                                          target="_blank" style="color: red;">立即注册</a></span>
+                    <a href="http://www.ihczd.com/hczd-client/authority/login/lostPwd.htm" target="_blank"
+                       class="forget_pwd">忘记密码？</a>
+
+                <!-- / tabs_item -->
+            </div>
+            <!-- / tab_content -->
+        </div>
+    </div>
+</div>
+
+<div class="foot">
+    <div class="others"> 福建和诚智达汽车管理服务有限公司&nbsp;版权所有&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;©&nbsp;2012-2014&nbsp;hczd&nbsp;Corporation,&nbsp;All&nbsp;Rights&nbsp;Reserved&nbsp;&nbsp;[闽ICP备12017564号-1]
+
+    </div>
+</div>
+</body>
+</html>

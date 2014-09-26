@@ -1,0 +1,253 @@
+.top_menu {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: right;
+    height: 30px;
+    line-height: 30px;
+    background-color: #fafafa;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 0 3px #aaa;
+}
+.sidediv{
+    overflow: hidden;
+}
+.head_top {
+    float: right;
+    color: #333;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+.main {
+    margin-top: -5px;
+}
+
+.menu_list {
+    position: fixed;
+    left: 10px;
+    top: 0px;
+    height: 100%;
+    width: 200px;
+    text-align: center;
+}
+
+.menu_head {
+    padding: 5px 10px;
+    cursor: pointer;
+    position: relative;
+    margin: 1px;
+    font-weight: bold;
+    background: #ffffff center right no-repeat;
+}
+
+.menu_list .current {
+    background: #7cc6ff center right no-repeat;
+}
+
+.menu_body a {
+    display: block;
+    color: #006699;
+    background-color: #EFEFEF;
+    padding-left: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    height: 24px;
+    line-height: 24px;
+}
+
+.menu_body a:hover {
+    color: #000000;
+    text-decoration: underline;
+}
+
+._nav {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    z-index: 2;
+    color: #ecf0f1;
+    float: left;
+    background: #323a3e;
+}
+
+._nav > li {
+    border-bottom: 1px solid #2b2b2b;
+}
+
+._nav > li:last-child {
+    border-bottom-width: 0;
+}
+
+._nav > li > a {
+    display: block;
+    background-color: #2a76b7;
+    margin: 0 auto;
+    padding: 10% 20%;
+    transition: 180ms all;
+}
+
+._nav > li > a:hover {
+    display: block;
+    background-color: #0d418d;
+}
+
+._nav > li > a, #nav > li > a:link, #nav > li > a:visited, #nav > li > a:active {
+    text-decoration: none;
+    color: #ecf0f1;
+}
+
+._nav li ul {
+    list-style: none;
+    /*display: none;*/
+}
+
+._nav .sub-menu {
+    left: -25px;
+    position: relative;
+    width: 100%;
+    background-color: #dbddde;
+}
+
+.sub-menu > li {
+    list-style: none;
+    width: 100%;
+    border-width: 0;
+    background-color: #dbddde;
+    transition: 180ms all;
+}
+
+.sub-menu > li:hover,.sub-menu > li:active , .sub-menu > li:target{
+    background: #8daa87
+}
+.sub-menu > li > a {
+    display: block;
+    margin: 1px auto;
+    padding: 15px 40px;
+    color: #2a76b7;
+    text-decoration: none;
+}
+
+._nav li:target > .sub-menu {
+    display: block;
+}
+
+._nav li:target > .sub-menu > li {
+    border-width: 0;
+}
+.cdbg{
+    background: #8daa87
+}
+.div1_1 {
+    float: left;
+    height: 500px;
+    border: 1px;
+    background: #ffffff;
+}
+
+.div1_2 {
+    position: relative;
+    left: 230px;
+    top: -500px;
+    width: 85%;
+    height: 500px;
+    margin-bottom: -500px;
+    background: #ecf0f1;
+}
+
+.div1_3 {
+    float: left;
+    width: 300px;
+    margin-left: 5px;
+    height: 500px;
+    background: #ecf0f1;
+}
+
+.gonggao {
+    background: #2a76b7;
+    text-align: center;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+.ranklist li em {
+    background: url(../images/mun.gif) no-repeat;
+    width: 20px;
+    height: 16px;
+    margin-left: -24px;
+    position: absolute;
+    text-align: center;
+    font-style: normal;
+    color: #333;
+
+}
+
+.ranklist li.top {
+    overflow: hidden;
+    background-position: 0 0;
+    color: #fff;
+}
+
+.ranklist li {
+    line-height: 16px;
+}
+
+.clearfix {
+    text-align: center;
+}
+
+.tabs {
+    margin-top: -10px;
+}
+
+iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+}
+.div_111{
+    float: left;
+    height: 100%;
+    width: 80%;
+    margin-right: 10px;
+}
+.announcement{
+    width: 18%;
+    float: left;
+}
+.boxgrid p {
+    text-align: center;
+    font-weight: bold;
+    font: 1em;
+}
+.boxgrid {
+    margin: 3% 0 0 4%;
+    width: 108px;
+    height: 108px;
+    float: left;
+    background: white;
+    overflow: hidden;
+    position: relative;
+}
+.caption .boxcaption {
+    top: 20px;
+    left: 0px;
+}
+.boxcaption {
+    font-size: 13px;
+    float: left;
+    position: absolute;
+    background: #eeeeee;
+    height: 90px;
+    width: 100%;
+    opacity: 0.8;
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80 );
+    -MS-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+}
+.boxgrid img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+}

@@ -1,0 +1,364 @@
+<html>
+<head>
+    <title>信用账户</title>
+
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hczd-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <script type="text/javascript">
+        $(function () {
+            /**
+             *数据显示
+             **/
+            $('#dt_mat_group').elanGrid({
+                url: 'account/mat_money_log/ajax_list.htm',
+                pageable: true,
+                columns: [
+                    {field: 'mat_start_time', title: '开始垫资时间', width: 160, align: 'left'},
+                    {field: 'mat_end_time', title: '结束垫资时间', width: 160, align: 'left'},
+                    {field: 'rule_name', title: '服务名称', width: 160, align: 'left'},
+                    {title: '状态', formatter: function (value, rowIndex, rowData) {
+                        return rowData.status == "未还" ? "<span style='color:red;'>未还</span>" : (rowData.status == "部分还款" ? "<span style='color:blue;'>部分还款</span>" : "<span style='color:green;'>已还</span>");
+                    }},
+                    {field: 'money', title: '垫资金额', width: 60, align: 'left'},
+                    {title: '已归还金额', formatter: function (value, rowIndex, rowData) {
+                        return rowData.actual_money == null ? 0 : rowData.actual_money;
+                    }},
+                    {title: '手续费', width: 60, align: 'left', formatter: function (value, rowIndex, rowData) {
+                        return rowData.mat_cost == null ? "" : rowData.mat_cost + "(" + (rowData.mat_cost_status == "已收取" ? "<span style='color:green;'>已收取</span>" : "<span style='color:red;'>未收取</span>") + ")";
+                    }},
+                    {title: '还款', formatter: function (value, rowIndex, rowData) {
+                        if ("[customer/customer/basic_account.htm_首页, customer/customer/basic_account.htm_业务概览, account/pay/editnew.htm_充值, account/mat_money_log/list.htm_立即还款, bill_monad/bill_monad/list.htm_付款, customer/customer/promotion_detail.htm_业务推广, customer/customer/notice_detail.htm_系统公告, card/gas_card/list.htm_油卡业务, account/installment/list.htm_燃油分期, customer/customer/company_info.htm_会员账户, customer/customer/company_info.htm_账户中心, customer/customer/company_info.htm_会员信息, customer/customer/company_info.htm_基本信息, bill/aptitude/add.htm_发票资质申请, authority/customer_user/update_pwd.htm_修改密码, bill/aptitude/list.htm_发票资质, bill/aptitude/validate.htm_发票资质删除, account/capital/query.htm_资金账户, account/recharge_record/list.htm_充值记录, account/pay/editnew.htm_立即充值, account/payment/paymentList.htm_收支明细, account/payment/money_out.htm_只看支出, account/payment/money_in.htm_只看收入, integral/integral/integralInfo.htm_我的积分, report/month_chart/list.htm_月结账单, report/month_chart/detail_v2.htm_查看, account/mat_money_log/list.htm_财务操作, account/mat_money_log/list.htm_垫资还款, account/mat_money_log/repayment_save.htm_一键归还, account/mat_money_log/repayment_save.htm_还款, account/installment/list.htm_燃油分期, account/installment_item/updateAutoAllocation.htm_启用, account/installment_item/edit.htm_设置, account/installment/edit.htm_设置, account/installment/save.htm_保存, account/installment_item/updateAutoAllocation.htm_禁用, bill_monad/bill_monad/list.htm_支付账单, bill_monad/bill_monad/pay_bill.htm_支付, bill_monad/bill_monad/detail.htm_详细, bill_monad/bill_monad/eidtnew.htm_编辑, bill/inventory/inventoryList.htm_开票申请, bill/inventory/add.htm_开票申请, bill/timing/list.htm_发票定时, bill/timing/update_status.htm_启用, bill/timing/update_status.htm_禁用, card/gas_card/list.htm_随车支付卡, card/gas_card/list.htm_加油卡, card/gas_card/list.htm_油卡业务, card/gas_card/app_assign.htm_分配申请, card/gas_card/add.htm_油卡申请, card/gas_card/cardInfo.htm_加油明细, card/gas_card/cardInfo_excel.htm_导出表格, card/gas_card/allocation_info.htm_分配明细, card/gas_card/excel_allocation_record.htm_导出Excel, card/gas_card_month_chart/list.htm_月结账单, card/gas_card/cardInfo.htm_详情, card/gas_card_change_app_record/list.htm_油卡变更, card/gas_card_change_app_record/editnew.htm_新增变更, card/gas_card_change_app_record/disable.htm_作废, access/access_card/list_handle.htm_通行卡, access/access_card/list_handle.htm_通行卡业务, access/access_card_account/save.htm_充值, access/access_card/app_assign.htm_分配申请, access/access_card_account/detail_list.htm_账户明细, insurance/insurance/query.htm_金融保险, insurance/insurance/query.htm_保险业务, insurance/insurance/query.htm_保单查询, insurance/insurance/detail_order.htm_详细, insurance/insurance/add.htm_新增保单, insurance/insurance/installment_query.htm_分期保单, insurance/insurance_installment_item/list.htm_分期明细, insurance/insurance/detail_order2.htm_详细, integral/integral/integralInfo.htm_车辆管理, vehicle/vehicle/list.htm_车辆资源, vehicle/vehicle/list.htm_车辆信息, vehicle/vehicle/editnew.htm_添加车辆, vehicle/vehicle/detail.htm_查看, vehicle/affiliat/edit.htm_借用, vehicle/vehicle/edit.htm_修改, vehicle/status/list.htm_车辆监控, Note/SetNotePark.aspx_异常提醒设置, vehicle/status/oilWear.htm_累积油耗, FortuneManageSet.aspx_车辆运程服务, vehicle/status/cardRecord.htm_加油明细, vehicle/vehicle_change/list.htm_变更管理, vehicle/vehicle_change/editnew.htm_登记变更, vehicle/vehicle_change/detail.htm_详细, vehicle/vehicle_change/disable.htm_作废, vehicle/vehicle_maintain/list.htm_维修管理, vehicle/vehicle_maintain/edit.htm_修改, vehicle/vehicle_maintain/disable.htm_作废, vehicle/vehicle_maintain/editnew.htm_登记维修, vehicle/vehicle_maintain/detail.htm_详细, vehicle/status/vehicle_status_report.htm_车辆报表, authority/index/to_tms.htm_运输管理系统, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_系统管理, authority/customer_user/list.htm_人员管理, authority/customer_user/detail.htm_详细, authority/customer_user/edit.htm_修改, authority/customer_user/disable.htm_禁用, authority/customer_user/disable.htm_启用, authority/customer_user/add.htm_添加人员, authority/customer_group/list.htm_人员角色, authority/customer_sys_power_group/edit.htm_权限管理, authority/customer_group/add.htm_添加角色, authority/customer_group/delete.htm_删除, authority/customer_group/edit.htm_修改, authority/customer_user_papers/list.htm_证件管理, authority/customer_user_papers/edit.htm_修改]".indexOf("account/mat_money_log/repayment_save.htm_还款") != -1) {
+                            return rowData.status == "已还" ? "" : "<a href='javascript:void(0);' onclick='to_discharge(" + rowData.id + ");' >还款</a>";
+                        } else {
+                            return "";
+                        }
+                    }}
+                ],
+                pagesize: 10,
+                pageable: true,
+                extradata: {}
+            });
+
+        });
+
+        //归还欠款
+        function to_discharge(id) {
+            if (id == 0) {
+                $.messager.confirm("提示", "您确定使用一键归还吗？系统将按照开始垫资时间升序归还。", function (b) {
+                    if (b) {
+                        hczd_client.loader.show();
+                        $.post("account/mat_money_log/repayment_save.htm", {"id": id, "remark": "手动归还"}, function (data) {
+                            if (isNaN(data)) {
+                                $.messager.alert("提示", data, "error");
+                            } else {
+                                $.messager.alert("提示", "还款成功", "info", function () {
+                                    $('#dt_mat_group').elanGrid('load');
+                                });
+                            }
+                            hczd_client.loader.close();
+                        });
+                    }
+                });
+            } else {
+                $.messager.confirm("提示", "您确定归还该笔欠款？", function (b) {
+                    if (b) {
+                        $.post("account/mat_money_log/repayment_save.htm", {"id": id, "remark": "手动归还"}, function (data) {
+                            if (isNaN(data)) {
+                                $.messager.alert("提示", data, "error");
+                            } else {
+                                $.messager.alert("提示", "还款成功", "info", function () {
+                                    $('#dt_mat_group').elanGrid('load');
+                                });
+                            }
+                            hczd_client.loader.close();
+                        });
+                    }
+                });
+            }
+        }
+
+        //搜索加载数据
+        function search_data() {
+            //设置分页时查询条件
+            $('#dt_mat_group').elanGrid({
+                queryParams: {
+                    start_time: $('#start_time').datetimebox("getValue"),
+                    end_time: $('#end_time').datetimebox("getValue"),
+                    status: $("#status").val()
+                }
+            });
+            $('#dt_mat_group').elanGrid('load');
+        }
+    </script>
+</head>
+<body>
+<div class="bar3">
+    开始垫资时间：<input type="text" id="start_time" class="easyui-datetimebox combo-f datetimebox-f"
+                  style="width: 160px; display: none;">
+    - <input type="text" id="end_time" class="easyui-datetimebox combo-f datetimebox-f"
+             style="width: 160px; display: none;">
+    状态：<select id="status">
+    <option value="">--请选择--</option>
+    <option value="未还">未还</option>
+    <option value="已还">已还</option>
+    <option value="部分还款">部分还款</option>
+</select>
+    <a href="javascript:void(0);" onclick="search_data();" class="easyui-linkbutton l-btn" group="" id=""><span
+            class="l-btn-left"><span class="l-btn-text">查询</span></span></a>
+    <!-- <input type="button" id="search" class="search" onclick="search_data()" style="cursor: hand;" /> -->
+
+</div>
+<div style="float: right;">
+
+    (点击一键归还系统会按<b>开始垫资时间升序</b>归还)
+    <a href="javascript:void(0);" onclick="to_discharge(0);" class="easyui-linkbutton l-btn" group="" id=""><span
+            class="l-btn-left"><span class="l-btn-text">一键归还</span></span></a>
+
+</div>
+<br>
+&nbsp;<br>
+<table id="dt_mat_group" class="elan_tb_data_list" width="100%" cellpadding="5px" cellspacing="0" border="0">
+    <thead>
+    <tr>
+        <td>开始垫资时间</td>
+        <td>结束垫资时间</td>
+        <td>服务名称</td>
+        <td>状态</td>
+        <td>垫资金额</td>
+        <td>已归还金额</td>
+        <td>手续费</td>
+        <td class="td_right">还款</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr></tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td class="pageset" colspan="8" style="border: 0;">
+            <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                    href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1" size="2"
+                                                                                               class="elanCurrentPage">页/共<span
+                    class="elanTotalPage">0</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp;
+                下一页&nbsp; </a>&nbsp;&nbsp;<a href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                    class="elanTotalSize">0</span>条数据，显示<span class="elanFromStart">0</span>-<span
+                    class="elanFromEnd">0</span>条
+            </div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+
+
+<div class="panel combo-p" style="position: absolute; z-index: 10; display: none; width: 180px;">
+    <div class="combo-panel panel-body panel-body-noheader" title="" id="" style="width: 178px; height: auto;">
+        <div class="datebox-calendar-inner">
+            <div class="calendar calendar-noborder" style="width: 0px; height: 178px;">
+                <div class="calendar-header">
+                    <div class="calendar-prevmonth"></div>
+                    <div class="calendar-nextmonth"></div>
+                    <div class="calendar-prevyear"></div>
+                    <div class="calendar-nextyear"></div>
+                    <div class="calendar-title"><span>九月 2014</span></div>
+                </div>
+                <div class="calendar-body" style="height: 156px;">
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <thead>
+                        <tr>
+                            <th>日</th>
+                            <th>一</th>
+                            <th>二</th>
+                            <th>三</th>
+                            <th>四</th>
+                            <th>五</th>
+                            <th>六</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,8,31">31</td>
+                            <td class="calendar-day" abbr="2014,9,1">1</td>
+                            <td class="calendar-day" abbr="2014,9,2">2</td>
+                            <td class="calendar-day" abbr="2014,9,3">3</td>
+                            <td class="calendar-day" abbr="2014,9,4">4</td>
+                            <td class="calendar-day" abbr="2014,9,5">5</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,6">6</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,7">7</td>
+                            <td class="calendar-day" abbr="2014,9,8">8</td>
+                            <td class="calendar-day" abbr="2014,9,9">9</td>
+                            <td class="calendar-day" abbr="2014,9,10">10</td>
+                            <td class="calendar-day" abbr="2014,9,11">11</td>
+                            <td class="calendar-day" abbr="2014,9,12">12</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,13">13</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,14">14</td>
+                            <td class="calendar-day" abbr="2014,9,15">15</td>
+                            <td class="calendar-day" abbr="2014,9,16">16</td>
+                            <td class="calendar-day" abbr="2014,9,17">17</td>
+                            <td class="calendar-day" abbr="2014,9,18">18</td>
+                            <td class="calendar-day" abbr="2014,9,19">19</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,20">20</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,21">21</td>
+                            <td class="calendar-day" abbr="2014,9,22">22</td>
+                            <td class="calendar-day" abbr="2014,9,23">23</td>
+                            <td class="calendar-day" abbr="2014,9,24">24</td>
+                            <td class="calendar-day" abbr="2014,9,25">25</td>
+                            <td class="calendar-day calendar-today calendar-selected" abbr="2014,9,26">26</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,27">27</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,28">28</td>
+                            <td class="calendar-day" abbr="2014,9,29">29</td>
+                            <td class="calendar-day" abbr="2014,9,30">30</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,1">1</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,2">2</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,3">3</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,4">4</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,10,5">5</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,6">6</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,7">7</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,8">8</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,9">9</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,10">10</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,11">11</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="calendar-menu" style="display: none;">
+                        <div class="calendar-menu-year-inner"><span class="calendar-menu-prev"></span><span><input
+                                class="calendar-menu-year" type="text"></span><span class="calendar-menu-next"></span>
+                        </div>
+                        <div class="calendar-menu-month-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:2px"><span class="spinner" style="width: 78px; height: 20px;"><input
+                style="width: 60px; height: 20px; line-height: 20px;"
+                class="timespinner-f spinner-text spinner-f validatebox-text"><span class="spinner-arrow"
+                                                                                    style="height: 20px;"><span
+                class="spinner-arrow-up" style="height: 10px;"></span><span class="spinner-arrow-down"
+                                                                            style="height: 10px;"></span></span></span>
+        </div>
+        <div class="datebox-button"><a href="javascript:void(0)" class="datebox-current">今天</a><a
+                href="javascript:void(0)" class="datebox-close">关闭</a><a href="javascript:void(0)"
+                                                                         class="datebox-ok">确定</a></div>
+    </div>
+</div>
+<div class="panel combo-p" style="position: absolute; z-index: 10; display: none; width: 180px;">
+    <div class="combo-panel panel-body panel-body-noheader" title="" id="" style="width: 178px; height: auto;">
+        <div class="datebox-calendar-inner">
+            <div class="calendar calendar-noborder" style="width: 0px; height: 178px;">
+                <div class="calendar-header">
+                    <div class="calendar-prevmonth"></div>
+                    <div class="calendar-nextmonth"></div>
+                    <div class="calendar-prevyear"></div>
+                    <div class="calendar-nextyear"></div>
+                    <div class="calendar-title"><span>九月 2014</span></div>
+                </div>
+                <div class="calendar-body" style="height: 156px;">
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <thead>
+                        <tr>
+                            <th>日</th>
+                            <th>一</th>
+                            <th>二</th>
+                            <th>三</th>
+                            <th>四</th>
+                            <th>五</th>
+                            <th>六</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,8,31">31</td>
+                            <td class="calendar-day" abbr="2014,9,1">1</td>
+                            <td class="calendar-day" abbr="2014,9,2">2</td>
+                            <td class="calendar-day" abbr="2014,9,3">3</td>
+                            <td class="calendar-day" abbr="2014,9,4">4</td>
+                            <td class="calendar-day" abbr="2014,9,5">5</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,6">6</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,7">7</td>
+                            <td class="calendar-day" abbr="2014,9,8">8</td>
+                            <td class="calendar-day" abbr="2014,9,9">9</td>
+                            <td class="calendar-day" abbr="2014,9,10">10</td>
+                            <td class="calendar-day" abbr="2014,9,11">11</td>
+                            <td class="calendar-day" abbr="2014,9,12">12</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,13">13</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,14">14</td>
+                            <td class="calendar-day" abbr="2014,9,15">15</td>
+                            <td class="calendar-day" abbr="2014,9,16">16</td>
+                            <td class="calendar-day" abbr="2014,9,17">17</td>
+                            <td class="calendar-day" abbr="2014,9,18">18</td>
+                            <td class="calendar-day" abbr="2014,9,19">19</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,20">20</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,21">21</td>
+                            <td class="calendar-day" abbr="2014,9,22">22</td>
+                            <td class="calendar-day" abbr="2014,9,23">23</td>
+                            <td class="calendar-day" abbr="2014,9,24">24</td>
+                            <td class="calendar-day" abbr="2014,9,25">25</td>
+                            <td class="calendar-day calendar-today calendar-selected" abbr="2014,9,26">26</td>
+                            <td class="calendar-day calendar-saturday" abbr="2014,9,27">27</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-sunday" abbr="2014,9,28">28</td>
+                            <td class="calendar-day" abbr="2014,9,29">29</td>
+                            <td class="calendar-day" abbr="2014,9,30">30</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,1">1</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,2">2</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,3">3</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,4">4</td>
+                        </tr>
+                        <tr>
+                            <td class="calendar-day calendar-other-month calendar-sunday" abbr="2014,10,5">5</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,6">6</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,7">7</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,8">8</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,9">9</td>
+                            <td class="calendar-day calendar-other-month" abbr="2014,10,10">10</td>
+                            <td class="calendar-day calendar-other-month calendar-saturday" abbr="2014,10,11">11</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="calendar-menu" style="display: none;">
+                        <div class="calendar-menu-year-inner"><span class="calendar-menu-prev"></span><span><input
+                                class="calendar-menu-year" type="text"></span><span class="calendar-menu-next"></span>
+                        </div>
+                        <div class="calendar-menu-month-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:2px"><span class="spinner" style="width: 78px; height: 20px;"><input
+                style="width: 60px; height: 20px; line-height: 20px;"
+                class="timespinner-f spinner-text spinner-f validatebox-text"><span class="spinner-arrow"
+                                                                                    style="height: 20px;"><span
+                class="spinner-arrow-up" style="height: 10px;"></span><span class="spinner-arrow-down"
+                                                                            style="height: 10px;"></span></span></span>
+        </div>
+        <div class="datebox-button"><a href="javascript:void(0)" class="datebox-current">今天</a><a
+                href="javascript:void(0)" class="datebox-close">关闭</a><a href="javascript:void(0)"
+                                                                         class="datebox-ok">确定</a></div>
+    </div>
+</div>
+</body>
+</html>

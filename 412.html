@@ -1,0 +1,582 @@
+<html>
+<head>
+<title>新增保单</title>
+
+<script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/hczd-client.js"></script>
+<link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="css/elan.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+<link href="css/uploadify.css" type="text/css" rel="Stylesheet" rev="Stylesheet">
+<script type="text/javascript" language="javascript" src="js/jquery.uploadify.min.js"></script>
+<script type="text/javascript">
+$(function () {
+    //表单信息
+    $('#myform').form({
+        url: 'insurance/insurance/save_app.htm',
+        onSubmit: function () {
+        },
+        success: function (data) {
+            if (isNaN(data)) {
+                $.messager.show({
+                    title: '错误提示',
+                    msg: '<span style="color:red;">' + data + '<span>',
+                    showType: 'show',
+                    icon: 'info',
+                    style: {
+                        right: '',
+                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                        bottom: ''
+                    }
+                });
+            } else {
+                //保存成功提示
+                $.messager.alert('提示', '保存成功！', 'info', function () {
+                    $('#hczd_sys_win_edit').window('close');
+                });
+            }
+        }
+    });
+    //选中客户情况
+    $('#sel_customer').combobox({
+        onSelect: function () {
+            $.post('customer/customer/ajax_get.htm', {id: $('#sel_customer').combobox('getValue')}, function (data) {
+                //设置申请客户
+                $('#customer_name').val(data.name);
+            });
+        }
+    });
+
+    //选中被保险人情况
+    $('#insured_customer').combobox({
+        onSelect: function () {
+            $.post('customer/customer/ajax_get.htm', {id: $('#insured_customer').combobox('getValue')}, function (data) {
+                //设置申请客户
+                $('input[name=insured_customer_name]').val(data.name);
+            });
+        }
+    });
+
+    //选中车牌号情况
+    $('#sel_car_no').combobox({
+        onSelect: function () {
+            $.post('vehicle/vehicle/ajax_get.htm', {id: $('#sel_car_no').combobox('getValue')}, function (data) {
+                $('#sel_car_no').combobox('setText', data.vehicle_no);
+                //填充已有的车辆信息
+                $('#vehicle_no').val(data.vehicle_no);
+                $("#filename_1").val(data.driving_license);
+                $("#img_1").html('<a href="http://admin.ycar365.com:8080/hczd-sys/' + data.driving_license + '" target="_blank"><img src="http://admin.ycar365.com:8080/hczd-sys/' + data.driving_license + '" style="width:100px;height:100px;" /></a>');
+                $("#img_1 a img").load(function () {
+
+                }).error(function () {
+
+                    $("#img_1 a img").attr("src", "http://www.ihczd.com:80/hczd-client/images/lack_pic.png");
+                    $("#img_1 a img").parent("a").attr("href", "http://www.ihczd.com:80/hczd-client/images/lack_pic.png");
+                });
+            });
+        }
+    });
+    //选中车管专员情况
+    $('#sale_man_select').combobox({
+        onSelect: function () {
+            //填充已有的车辆信息
+            $('#saleman_name').val($('#sale_man_select').combobox('getText'));
+        }
+    });
+
+    var id = '';
+    if (id) {
+        if (isNaN(id)) {
+
+        } else {
+            $.ajax({
+                type: 'post',
+                url: 'vehicle/vehicle/ajax_get.htm?id=' + id,
+                dataType: 'json',//服务器返回的数据类型
+                success: function (data) {
+                    $('#sel_car_no').combobox('setText', data.vehicle_no);
+                    $("input[name=vehicle_id]").val(data.id);
+                    //填充已有的车辆信息
+                    $('#vehicle_no').val(data.vehicle_no);
+                },
+                error: function () {
+                    $.messager.alert('提示', '系统出错，请联系管理员！');
+                }
+            });
+        }
+    }
+
+    //文件上传
+    var file_obj;
+    $("input[id^='file_upload_']").each(function () {
+        var length = $(this).attr("id").length;
+        var item = $(this).attr("id").substring(length - 1);
+        var path = $(this).attr("name");
+        var file_name = $(this).attr("alt");
+        upload($(this), "img_" + item, "filename_" + item, path, file_name);
+    });
+
+
+    //切换业务类型
+    $("#bus_type").change(function () {
+        var selected = $(this).val();
+        if (selected == 0 || selected == "") {
+            $(".bus_car").show();
+        } else if (selected == 1) {
+            $(".bus_car").hide();
+        }
+    });
+
+    setHiddenValue();
+
+});
+
+//文件上传
+function upload(obj, img_obj, file_obj, path, file_name) {
+    obj.uploadify({
+        'uploader': 'http://www.ihczd.com:80/hczd-client/common/upload/upload.htm;jsessionid=?sessionid=',
+        //按钮高度
+        'height': 20,
+        //是否自动上传
+        'auto': true,
+        //按钮文字
+        'buttonText': '选择文件',
+        //上传大小限制
+        'fileSizeLimit': '512KB',
+        //上传格式限制
+        'fileTypeDesc': '描述文件类型',
+        'fileTypeExts': '*.gif;*.jpg;*.png',
+        //上传附带数据
+        'formData': {file_name: 'insurance/' + path, cid: '', 'dict_data_id': '', 'dict_data_name': file_name},
+        //上传队列
+        'queueID': 'some_file_queue',
+        'requeueErrors': true,
+        //检测FLASH失败调用
+        'onFallback': function () {
+            $.messager.alert("提示", "您未安装FLASH控件，无法上传图片！请安装FLASH控件后再试。", "error", function () {
+// 		            	parent.document.getElementById("sd").src="bill/aptitude/list.htm";
+            });
+        },
+        //上传到服务器，服务器返回]]相应信息到data里
+        'onUploadSuccess': function (file, data, response) {
+            $('#' + file.id).find('.data').html('上传完毕');
+            if (data.indexOf("200") == -1) {
+                $.messager.alert("提示", data, "error");
+            } else {
+                data = data.substring(1, data.length - 4);
+                $("#" + file_obj).val(data);
+                $("#" + img_obj).html("<a href='http://admin.ycar365.com:8080/hczd-sys/" + data + "' target='_blank'><img src='http://admin.ycar365.com:8080/hczd-sys/" + data + "' style='width:100px;height:100px;' /></a>");
+            }
+        },
+        //选择上传文件后调用
+        'onSelect': function (file) {
+            var customer_id = $("input[name=customer_id]").val();
+            if (customer_id == "") {
+                alert("请先选择客户！");
+                obj.uploadify("cancel");
+            } else {
+                obj.uploadify("settings", "formData", {file_name: 'insurance/' + path, cid: customer_id, dict_data_id: '', dict_data_name: file_name});
+            }
+        },
+        'overrideEvents': ['onDialogClose'],
+        //返回一个错误，选择文件的时候触发
+        'onSelectError': function (file, errorCode, errorMsg) {
+            switch (errorCode) {
+                case -110:
+                    alert("文件 [" + file.name + "] 大小超出系统限制的512KB大小！");
+                    break;
+                case -120:
+                    alert("文件 [" + file.name + "] 大小异常！");
+                    break;
+                case -130:
+                    $.messager.alert("提示", "文件 [" + file.name + "] 类型不正确！", "error");
+                    break;
+            }
+        }
+    });
+}
+
+//如果车牌号不存在则创建新的车辆
+function add_vehicle() {
+    hczd_sys.window.edit('添加车辆', 'vehicle/vehicle/add.htm', 600, 430);
+}
+//加载客户
+function sel_customer(id) {
+    if ($(id).combobox('getText'))
+        $(id).combobox('reload', 'customer/customer/combox_ajax_list.htm?keyword=' + $(id).combobox('getText'));
+}
+
+//加载车牌号
+function sel_car_no(id) {
+    if ($(id).combobox('getText') && $(id).combobox('getText').length > 1)
+        $(id).combobox('reload', 'vehicle/vehicle/combox_ajax_list.htm?keyword=' + $(id).combobox('getText'));
+}
+//选择业务代表
+function sel_sale_man(id) {
+    if ($(id).combobox('getText'))
+        $(id).combobox('reload', 'authority/user/combox_ajax_list.htm?keyword=' + $(id).combobox('getText'));
+}
+
+//验证提交
+function validate() {
+    var msg = "true";
+    if ($("input[name=customer_id]").val() == "") {
+        msg = "客户名不合法，请从相应下拉框中选择！";
+    }
+
+    if ($("input[name=insured_customer_id]").val() == "") {
+        msg = "被保险人不合法，请从相应下拉框中选择！";
+    }
+
+    if ($("input[name=vehicle_id]").val() == "") {
+        msg = "车牌号不合法，请从相应下拉框中选择！";
+    }
+
+
+    if (msg != "true") {
+        $.messager.show({
+            title: '错误提示',
+            msg: '<span style="color:red;">' + msg + '<span>',
+            showType: 'show',
+            icon: 'info',
+            style: {
+                right: '',
+                top: document.body.scrollTop + document.documentElement.scrollTop,
+                bottom: ''
+            }
+        });
+
+        return false;
+    } else {
+        $("#myform").submit();
+    }
+
+
+}
+
+//添加完车辆默认为当前车辆
+function re_write_vehicle(vid, vno) {
+    //填充已有的车辆信息
+    $('input[name="hz_vehicle.id"]').val(vid);
+    //设置车牌号
+    $('input[name=vehicle_no]').val(vno);
+    $("#sel_car_no").combobox('setText', vno);
+}
+
+//动态生成文件上传
+function createInput() {
+    alert(d);
+}
+
+//隐藏域赋值
+function setHiddenValue() {
+    $("div[id^='img_']").each(function (index, dom) {
+        var img = $(this).children("a").children("img").attr("src");
+        var count = index + 1;
+        if (img != undefined) {
+            img = img.split("hczd-sys/");
+            $("#filename_" + count).val(img[1]);
+        }
+    });
+}
+
+function return_() {
+    parent.document.getElementById("sd").src = 'insurance/insurance/query.htm';
+}
+</script>
+</head>
+
+<body>
+<div id="cc" style="border:1px solid #339933; padding: 0;margin: 0;">
+    <div style="background: #339933;padding: 5px">
+        <b style="color:white;font-size : 14px; padding: 5px 5px 5px 15px;">保单信息</b>
+    </div>
+    <form action="insurance/insurance/save_app.htm" method="post" enctype="multipart/form-data" name="myform"
+          id="myform">
+        <input type="hidden" value="" name="customer_name" id="customer_name">
+        <input type="hidden" value="" name="vehicle_no" id="vehicle_no">
+        <input type="hidden" name="saleman_name" id="saleman_name">
+        <input type="hidden" name="customer_id" value="7465">
+        <table width="100%" align="center">
+            <tbody>
+            <tr>
+                <td align="right">业务类型<span style="color: red"> * </span>：</td>
+                <td>
+                    <select id="bus_type" name="bus_type">
+                        <option value="">==请选择==</option>
+                        <option value="0">大车</option>
+                        <option value="1">私家车</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">投保人<span style="color: red"> * </span>：</td>
+                <td colspan="2">
+                    福州新远通物流有限公司
+                </td>
+            </tr>
+            <tr>
+                <td align="right">被保险人<span style="color: red"> * </span>：</td>
+                <td colspan="2">
+                    <input type="text" name="insured_customer_name">
+                </td>
+            </tr>
+            <tr id="aa">
+                <td align="right">车牌号<span style="color: red"> * </span>：</td>
+                <td colspan="2">
+                    <select id="sel_car_no"
+                            data-options="valueField:'id',textField:'vehicle_no',onChange:function(){sel_car_no('#sel_car_no');}"
+                            class="easyui-combobox combobox-f combo-f" style="width: 200px; display: none;"
+                            comboname="vehicle_id"></select><span class="combo"
+                                                                  style="width: 198px; height: 20px;"><input type="text"
+                                                                                                             class="combo-text validatebox-text"
+                                                                                                             autocomplete="off"
+                                                                                                             style="width: 180px; height: 20px; line-height: 20px;"><span><span
+                        class="combo-arrow" style="height: 20px;"></span></span><input type="hidden" class="combo-value"
+                                                                                       name="vehicle_id"
+                                                                                       value=""></span>
+
+
+                    <a href="javascript:void(0);"
+                       onclick="parent.document.getElementById('sd').src='http://www.ihczd.com:80/hczd-client/insurance/insurance/add_vehicle.htm'"
+                       class="easyui-linkbutton l-btn" group="" id=""><span class="l-btn-left"><span class="l-btn-text">添加车辆</span></span></a>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">需求描述：</td>
+                <td colspan="2">
+                    <textarea rows="4" cols="65" name="remark"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">行驶证：</td>
+                <td>
+                    <div id="file_upload_1" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_0" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726547769" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726547769">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_0&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Fdriving_licence%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E8%25A1%258C%25E9%25A9%25B6%25E8%25AF%2581&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_1-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_1" name="driving_licence_file">
+                </td>
+                <td>
+                    <div id="img_1">
+
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td align="right">上年度交强险保单：</td>
+                <td>
+                    <div id="file_upload_2" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_1" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726547863" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726547863">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_1&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Fpre_year_insurance%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E4%25B8%258A%25E5%25B9%25B4%25E5%25BA%25A6%25E4%25BA%25A4%25E5%25BC%25BA%25E9%2599%25A9%25E4%25BF%259D&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_2-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_2" name="pre_year_insurance_file">
+
+                </td>
+                <td>
+                    <div id="img_2" style="float: left">
+
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">上年度商业险保单：</td>
+                <td>
+                    <div id="file_upload_3" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_2" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726548004" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726548004">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_2&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Fpre_year_bus_insurance%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E4%25B8%258A%25E5%25B9%25B4%25E5%25BA%25A6%25E5%2595%2586%25E4%25B8%259A%25E9%2599%25A9%25E4%25BF%259D%25E5%258D%2595&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_3-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_3" name="pre_year_bus_insurance_file">
+                </td>
+                <td>
+                    <div id="img_3" style="float: left">
+
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">所有人身份证：</td>
+                <td>
+                    <div id="file_upload_4" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_3" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726548160" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726548160">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_3&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Fowner_paper%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E6%2589%2580%25E6%259C%2589%25E4%25BA%25BA%25E8%25BA%25AB%25E4%25BB%25BD%25E8%25AF%2581&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_4-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_4" name="owner_paper_file">
+                </td>
+                <td>
+                    <div id="img_4" style="float: left">
+
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">组织机构代码证：</td>
+                <td>
+                    <div id="file_upload_5" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_4" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726548301" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726548301">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_4&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Forg_code_paper%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E7%25BB%2584%25E7%25BB%2587%25E6%259C%25BA%25E6%259E%2584%25E4%25BB%25A3%25E7%25A0%2581%25E8%25AF%2581&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_5-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_5" name="org_code_paper_file">
+                </td>
+                <td>
+                    <div id="img_5" style="float: left">
+
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">挂靠单位组织机构代码证：</td>
+                <td>
+                    <div id="file_upload_6" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_5" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726548457" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726548457">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_5&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Fanchored_org_code%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E6%258C%2582%25E9%259D%25A0%25E5%258D%2595%25E4%25BD%258D%25E7%25BB%2584%25E7%25BB%2587%25E6%259C%25BA%25E6%259E%2584%25E4%25BB%25A3%25E7%25A0%2581%25E8%25AF%2581&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_6-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_6" name="anchored_org_code_file">
+                </td>
+                <td>
+                    <div id="img_6" style="float: left">
+
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">挂靠协议：</td>
+                <td>
+                    <div id="file_upload_7" class="uploadify" style="height: 20px; width: 120px;">
+                        <object id="SWFUpload_6" type="application/x-shockwave-flash"
+                                data="uploadify.swf?preventswfcaching=1411726548597" width="120" height="20"
+                                class="swfupload" style="position: absolute; z-index: 1;">
+                            <param name="wmode" value="transparent">
+                            <param name="movie" value="uploadify.swf?preventswfcaching=1411726548597">
+                            <param name="quality" value="high">
+                            <param name="menu" value="false">
+                            <param name="allowScriptAccess" value="always">
+                            <param name="flashvars"
+                                   value="movieName=SWFUpload_6&amp;uploadURL=http%3A%2F%2Fwww.ihczd.com%3A80%2Fhczd-client%2Fcommon%2Fupload%2Fupload.htm%3Bjsessionid%3D%3Fsessionid%3D&amp;useQueryString=false&amp;requeueOnError=true&amp;httpSuccess=&amp;assumeSuccessTimeout=30&amp;params=file_name%3Dinsurance%252Fanchored_agreement%26amp%3Bcid%3D%26amp%3Bdict_data_id%3D%26amp%3Bdict_data_name%3D%25E6%258C%2582%25E9%259D%25A0%25E5%258D%258F%25E8%25AE%25AE&amp;filePostName=Filedata&amp;fileTypes=*.gif%3B*.jpg%3B*.png&amp;fileTypesDescription=%E6%8F%8F%E8%BF%B0%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B&amp;fileSizeLimit=512KB&amp;fileUploadLimit=0&amp;fileQueueLimit=999&amp;debugEnabled=false&amp;buttonImageURL=%2Fhczd-client%2Finsurance%2Finsurance%2F&amp;buttonWidth=120&amp;buttonHeight=20&amp;buttonText=&amp;buttonTextTopPadding=0&amp;buttonTextLeftPadding=0&amp;buttonTextStyle=color%3A%20%23000000%3B%20font-size%3A%2016pt%3B&amp;buttonAction=-110&amp;buttonDisabled=false&amp;buttonCursor=-2">
+                        </object>
+                        <div id="file_upload_7-button" class="uploadify-button "
+                             style="height: 20px; line-height: 20px; width: 120px;"><span class="uploadify-button-text">选择文件</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="filename_7" name="anchored_agreement_file">
+                </td>
+                <td>
+                    <div id="img_7" style="float: left">
+
+
+                    </div>
+                </td>
+            </tr>
+            <!-- 			  	 	<tr> -->
+            <!-- 			  	 		<td align="right">预计保单生效时间：</td> -->
+            <!-- 			  	 		<td> -->
+            <!-- 			  	 			<input type="text" name="pre_effective_time" class="easyui-datebox" /> -->
+            <!-- 			  	 		</td> -->
+            <!-- 			  	 	</tr> -->
+            <tr>
+                <td colspan="2" align="center" style="padding: 10px;">
+                    <!-- <button type="button" onclick="validate();" >
+                       <span class="icon-save">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                       <span class="save">保存</span>
+                   </button>
+                    <button type="button" onclick="javascript:window.history.go(-1);" >
+                       <span class="icon-undo">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                       <span class="undo">返回</span>
+                   </button> -->
+                    <a href="javascript:void(0);" onclick="validate();" class="easyui-linkbutton l-btn" group=""
+                       id=""><span class="l-btn-left"><span class="l-btn-text">保存</span></span></a>
+                    <a href="javascript:void(0);" onclick="return_();" class="easyui-linkbutton l-btn" group=""
+                       id=""><span class="l-btn-left"><span class="l-btn-text">返回</span></span></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+<div class="panel combo-p" style="position: absolute; z-index: 10; display: none; width: 200px;">
+    <div class="combo-panel panel-body panel-body-noheader" title="" style="width: 198px; height: 198px;"></div>
+</div>
+</body>
+</html>

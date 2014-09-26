@@ -1,0 +1,111 @@
+<html>
+<head>
+    <title>证件列表</title>
+
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hczd-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src=" js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/elan.css">
+    <script type="text/javascript">
+        $(function () {
+
+            var customer = "";
+
+            $('#dt_customer_user_papers').elanGrid({
+                pageable: true,
+                width: '500px',
+                url: 'authority/customer_user_papers/ajax_list.htm',
+                columns: [
+                    {title: '编号', field: 'id'},
+                    {title: '真实名称', field: 'name'},
+                    {title: '登录账户', field: 'username'},
+                    {title: '所在组', formatter: function (clValue, rowIndex, rowData) {
+                        var group = "";
+                        $(rowData.listGroup).each(function (index, dom) {
+                            if ($(rowData.listGroup).length == index + 1) {
+                                group = group + dom.name;
+                            } else {
+                                group = group + dom.name + "、";
+                            }
+                        });
+                        return group;
+                    }},
+                    {title: '证件', formatter: function (clValue, rowIndex, rowData) {
+                        var papers = "";
+                        $(rowData.listPapers).each(function (index, dom) {
+                            if ($(rowData.listPapers).length == index + 1) {
+                                papers = papers + dom.papers_name;
+                            } else {
+                                papers = papers + dom.papers_name + "、";
+                            }
+                        });
+                        return papers;
+                    }},
+                    {title: '操作', formatter: function (clValue, rowIndex, rowData) {
+                        var user_id = "";
+                        if (customer == rowData.id) {
+                            return '<a href="http://www.ihczd.com:80/hczd-client/authority/customer_user_papers/edit.htm?id=' + rowData.id + '">修改</a>&nbsp;|&nbsp;<a href="http://www.ihczd.com:80/hczd-client/authority/customer_user_papers/detail.htm?id=' + rowData.id + '">详细</a>';
+                        } else {
+// 					return '<a href="http://www.ihczd.com:80/hczd-client/authority/customer_user_papers_papers/detail.htm?id='+rowData.id+'">详细</a>'; 
+                            return '<a href="http://www.ihczd.com:80/hczd-client/authority/customer_user_papers/detail.htm?id=' + rowData.id + '">详细</a>';
+                        }
+                    }}
+                ],
+                pagesize: 15,
+                pageable: true,
+                extradata: {}
+            });
+
+            $("#dt_customer_user_papers").width("100%");
+        });
+
+
+    </script>
+</head>
+
+<body>
+
+<div>
+    <div class="bar4">
+        <!-- 证件管理
+    </div> -->
+    </div>
+    <table id="dt_customer_user_papers" class="elan_tb_data_list" width="500px" cellpadding="5px" cellspacing="0"
+           border="0" style="width: 100%;">
+        <thead>
+        <tr>
+            <td>编号</td>
+            <td>真实名称</td>
+            <td>登录账户</td>
+            <td>所在组</td>
+            <td>证件</td>
+            <td class="td_right">操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr></tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td class="pageset" colspan="6" style="border: 0;">
+                <div id="page_style"><a href="javascript:void(0);" class="elanFirstPage">&nbsp; 首页&nbsp; </a>&nbsp;&nbsp;<a
+                        href="javascript:void(0);" class="elanUpPage">&nbsp; 上一页&nbsp; </a>第<input value="1" size="2"
+                                                                                                   class="elanCurrentPage">页/共<span
+                        class="elanTotalPage">0</span>页<a href="javascript:void(0);" class="elanNextPage">&nbsp; 下一页&nbsp; </a>&nbsp;&nbsp;<a
+                        href="javascript:void(0);" class="elanLastPage">&nbsp; 尾页&nbsp; </a>&nbsp;&nbsp;&nbsp;共<span
+                        class="elanTotalSize">0</span>条数据，显示<span class="elanFromStart">0</span>-<span
+                        class="elanFromEnd">0</span>条
+                </div>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+
+
+</div>
+</body>
+</html>
